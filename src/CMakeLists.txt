@@ -3,6 +3,8 @@ add_executable(${NAME}
         StateExample.cpp
 		ExampleAgentObserver.cpp
 		RGBLEDMgr.cpp
+		SaberState.cpp
+		BladeRequest.cpp
         )
 
 # Pull in our pico_stdlib which pulls in commonly used features
@@ -15,6 +17,8 @@ target_link_libraries(${NAME}
 	tiny_json
 	hardware_rtc
 	RTOSComponents
+	pico_multicore
+	PicoLed
 )
 
 # enable usb output, disable uart output

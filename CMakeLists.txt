@@ -30,6 +30,7 @@ include("lib/twinThingPicoESP/twinThingPicoESP.cmake")
 include("lib/FreeRTOS-Kernel.cmake")
 include("lib/lwesp.cmake")
 include("lib/RtosComponents/RTOSComponents.cmake")
+include("lib/PicoLED/PicoLed.cmake")
 
 
 

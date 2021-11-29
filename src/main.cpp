@@ -4,9 +4,16 @@
 #include "task.h"
 #include <array>
 #include "lwesp/lwesp.h"
+#include <stdint.h>
 
 #include "lwesp/apps/lwesp_mqtt_client_api.h"
 
+#include "pico/multicore.h"
+
+#include <PicoLed.hpp>
+
+#define LEDS_PIN 0
+#define LEDS_LENGTH 2
 
 
 
@@ -34,7 +41,34 @@
 #include "ExampleAgentObserver.h"
 #include "RGBLEDMgr.h"
 #include "RGBLEDAgent.h"
+#include "SaberState.h"
+#include "BladeRequest.h"
 
+
+void core1_entry() {
+	BladeRequest req;
+	uint32_t mesg;
+
+	auto ledStrip = PicoLed::addLeds<PicoLed::WS2812B>(pio0, 0, LEDS_PIN, LEDS_LENGTH, PicoLed::FORMAT_GRB);
+	ledStrip.setBrightness(64);
+
+	ledStrip.fill( PicoLed::RGB(0xff, 0, 0) );
+	ledStrip.show();
+
+	for(;;){
+		if (req.readFromQueue()){
+			if (req.getReq() == BladeColour){
+				ledStrip.fill( PicoLed::RGB(
+						req.getRed(),
+						req.getGreen(),
+						req.getBlue()) );
+				ledStrip.show();
+			}
+		}
+	}
+
+
+}
 
 void runTimeStats( ){
 	TaskStatus_t *pxTaskStatusArray;
@@ -111,7 +145,8 @@ init_thread(void* pvParameters) {
 	char mqttPwd[] = MQTTPASSWD;
 
 	MQTTRouterTwin mqttRouter;
-	StateExample state;
+	//StateExample state;
+	SaberState state;
 	ExampleAgentObserver agentObs;
 
 	MQTTAgent mqttAgent(512, 512);
@@ -182,6 +217,9 @@ int main() {
 
 	sleep_ms(3000);
 	printf("******GO******\n");
+
+	multicore_reset_core1 ();
+	multicore_launch_core1(core1_entry);
 
 
     BaseType_t atReturned;
