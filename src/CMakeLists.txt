@@ -5,6 +5,8 @@ add_executable(${NAME}
 		RGBLEDMgr.cpp
 		SaberState.cpp
 		BladeRequest.cpp
+		BladeMgr.cpp
+		BladeStateAgent.cpp
         )
 
 # Pull in our pico_stdlib which pulls in commonly used features

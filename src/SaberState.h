@@ -8,6 +8,7 @@
 #ifndef SABERSTATE_H_
 #define SABERSTATE_H_
 
+#include <MQTTConfig.h>
 #include "StateTemp.h"
 #include <stdbool.h>
 

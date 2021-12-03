@@ -51,10 +51,12 @@ SaberState::SaberState(const SaberState &other) {
 void SaberState::setOn(bool b){
 	on = b;
 	BladeRequest req;
-	if (b){
+	if (on == true){
 		req.setReq(BladeOn);
+		LogDebug(("ON"));
 	} else {
 		req.setReq(BladeOff);
+		LogDebug(("OFF"));
 	}
 	req.writeToQueue();
 

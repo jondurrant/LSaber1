@@ -12,8 +12,7 @@
 
 #include <PicoLed.hpp>
 
-#define LEDS_PIN 0
-#define LEDS_LENGTH 2
+
 
 
 
@@ -42,31 +41,13 @@
 #include "RGBLEDMgr.h"
 #include "RGBLEDAgent.h"
 #include "SaberState.h"
-#include "BladeRequest.h"
+#include "BladeMgr.h"
+#include "BladeStateAgent.h"
 
 
 void core1_entry() {
-	BladeRequest req;
-	uint32_t mesg;
-
-	auto ledStrip = PicoLed::addLeds<PicoLed::WS2812B>(pio0, 0, LEDS_PIN, LEDS_LENGTH, PicoLed::FORMAT_GRB);
-	ledStrip.setBrightness(64);
-
-	ledStrip.fill( PicoLed::RGB(0xff, 0, 0) );
-	ledStrip.show();
-
-	for(;;){
-		if (req.readFromQueue()){
-			if (req.getReq() == BladeColour){
-				ledStrip.fill( PicoLed::RGB(
-						req.getRed(),
-						req.getGreen(),
-						req.getBlue()) );
-				ledStrip.show();
-			}
-		}
-	}
-
+	BladeMgr blade;
+	blade.loopForever();
 
 }
 
@@ -150,7 +131,8 @@ init_thread(void* pvParameters) {
 	ExampleAgentObserver agentObs;
 
 	MQTTAgent mqttAgent(512, 512);
-	TwinTask xTwin;
+	//TwinTask xTwin;
+	BladeStateAgent xTwin;
 	MQTTPingTask xPing;
 
 	RGBLEDAgent xLed(3, 4, 5);

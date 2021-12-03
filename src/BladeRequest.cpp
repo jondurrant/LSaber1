@@ -66,8 +66,8 @@ bool BladeRequest::writeToQueue(){
 	mesg = mesg | blue;
 	mesg = mesg << 8;
 	mesg = mesg | (uint8_t)req;
-	printf("Req %x [%x, %x, %x]\n", req, red, green, blue);
-	printf("QUEUE WRITE %x\n", mesg);
+	//printf("Req %x [%x, %x, %x]\n", req, red, green, blue);
+	//printf("QUEUE WRITE %x\n", mesg);
 
 	if (multicore_fifo_wready()){
 		multicore_fifo_push_timeout_us(mesg, 0);
@@ -84,6 +84,10 @@ bool BladeRequest::writeToQueue(){
 
 bool BladeRequest::readFromQueue(){
 	uint32_t mesg;
+
+	if (!multicore_fifo_rvalid()){
+		return false;
+	}
 
 	if (multicore_fifo_pop_timeout_us(0, &mesg)){
 		set(mesg);
@@ -115,6 +119,6 @@ void BladeRequest::set(uint32_t mesg){
 	green = (uint8_t)(m & 0xFF);
 	m = m >> 8;
 	red = (uint8_t)(m & 0xFF);
-	printf("Set %x [%x, %x, %x]\n", req, red, green, blue);
+	//printf("Set %x [%x, %x, %x]\n", req, red, green, blue);
 }
 
