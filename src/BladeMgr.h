@@ -17,7 +17,7 @@
 
 class BladeMgr {
 public:
-	BladeMgr();
+	BladeMgr(uint8_t pirPin = 17, uint8_t switchPin = 16);
 	virtual ~BladeMgr();
 
 
@@ -29,19 +29,38 @@ public:
 
 	void turnOff(bool remote = false);
 
+protected:
+
+	void handleGPIO(uint gpio, uint32_t events);
+
+	void handleShortPress();
+
+	void handleLongPress();
+
 
 private:
+	 static void gpioCallback (uint gpio, uint32_t events);
+
+
+
 	uint8_t red = 0;
 
 	uint8_t green = 0;
 	uint8_t blue = 0;
 
+	uint8_t xPirPin = 0;
+	uint8_t xSwitchPin = 0;
+
 	uint32_t xTimeTurnedOn = 0;
 
 	uint32_t xOffTimeMS = 5000; //MS
 
+	uint32_t xSwitchTime = 0;
+
 	PicoLed::PicoLedController ledStrip = PicoLed::addLeds<PicoLed::WS2812B>(pio0, 0, LEDS_PIN, LEDS_LENGTH, PicoLed::FORMAT_GRB);
 
+
+	static BladeMgr * pSelf;
 };
 
 #endif /* BLADEMGR_H_ */

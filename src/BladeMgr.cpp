@@ -8,11 +8,34 @@
 #include "BladeMgr.h"
 #include "BladeRequest.h"
 
+#include "hardware/gpio.h"
 #include <stdio.h>
 
-BladeMgr::BladeMgr() {
-	// TODO Auto-generated constructor stub
+BladeMgr * BladeMgr::pSelf = NULL;
 
+BladeMgr::BladeMgr(uint8_t pirPin, uint8_t switchPin) {
+	pSelf = this;
+	xPirPin = pirPin;
+	xSwitchPin = switchPin;
+
+	//Set up PIR
+	gpio_init(xPirPin);
+	gpio_set_dir(xPirPin, GPIO_IN);
+	gpio_set_irq_enabled_with_callback(xPirPin,
+		GPIO_IRQ_EDGE_RISE,
+		true,
+		gpioCallback
+	);
+
+	//Set Switch
+	gpio_init(xSwitchPin);
+	gpio_set_dir(xSwitchPin, GPIO_IN);
+	gpio_pull_up (xSwitchPin);
+	gpio_set_irq_enabled_with_callback(xSwitchPin,
+		GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL,
+		true,
+		gpioCallback
+	);
 }
 
 BladeMgr::~BladeMgr() {
@@ -101,3 +124,44 @@ void BladeMgr::setColour(uint8_t r, uint8_t g, uint8_t b){
 	green = g;
 	blue = b;
 }
+
+
+void BladeMgr::gpioCallback (uint gpio, uint32_t events){
+	BladeMgr::pSelf->handleGPIO(gpio, events);
+}
+
+
+void BladeMgr::handleGPIO (uint gpio, uint32_t events){
+	if (gpio == xPirPin){
+		if ((events & 0x08) > 0){
+			turnOn(false);
+		}
+	}
+
+
+	if (gpio == xSwitchPin){
+		if ((events & GPIO_IRQ_EDGE_FALL) > 0){
+			xSwitchTime = to_ms_since_boot(get_absolute_time ());
+		}
+		if ((events & GPIO_IRQ_EDGE_RISE) > 0){
+			uint32_t t = to_ms_since_boot(get_absolute_time ()) - xSwitchTime;
+			if ((t < 100) || (t > 5000)){
+				return;
+			} else if (t < 1000){
+				handleShortPress();
+			} else {
+				handleLongPress();
+			}
+		}
+	}
+}
+
+
+void BladeMgr::handleShortPress(){
+	turnOn();
+}
+
+void BladeMgr::handleLongPress(){
+	turnOn();
+}
+
