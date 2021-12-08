@@ -13,6 +13,8 @@
 
 #include "BladeColour.h"
 
+enum BladeSeqEnum {BladeSeqOff, BladeSeqTurnOn, BladeSeqOn, BladeSeqTurnOff};
+
 class BladeSeqInterface {
 public:
 	BladeSeqInterface();

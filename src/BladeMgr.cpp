@@ -9,6 +9,7 @@
 #include "BladeRequest.h"
 
 #include "BladeSeqBinary.h"
+#include "BladeSeqNewHope.h"
 
 #include "hardware/gpio.h"
 #include <stdio.h>
@@ -208,7 +209,8 @@ void BladeMgr::handleLongPress(){
 }
 
 void BladeMgr::initSeqs(){
-	xpBladeSeqs[0] = new BladeSeqBinary;
+	//xpBladeSeqs[0] = new BladeSeqBinary;
+	xpBladeSeqs[0] = new BladeSeqNewHope;
 }
 
 

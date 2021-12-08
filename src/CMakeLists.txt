@@ -10,6 +10,7 @@ add_executable(${NAME}
 		BladeStateAgent.cpp
 		BladeSeqInterface.cpp
 		BladeSeqBinary.cpp
+		BladeSeqNewHope.cpp
         )
 
 # Pull in our pico_stdlib which pulls in commonly used features
