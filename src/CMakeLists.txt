@@ -11,6 +11,7 @@ add_executable(${NAME}
 		BladeSeqInterface.cpp
 		BladeSeqBinary.cpp
 		BladeSeqNewHope.cpp
+		BladeSeqAnim.cpp
         )
 
 # Pull in our pico_stdlib which pulls in commonly used features
