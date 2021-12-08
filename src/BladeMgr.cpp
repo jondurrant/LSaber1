@@ -8,6 +8,8 @@
 #include "BladeMgr.h"
 #include "BladeRequest.h"
 
+#include "BladeSeqBinary.h"
+
 #include "hardware/gpio.h"
 #include <stdio.h>
 
@@ -36,6 +38,8 @@ BladeMgr::BladeMgr(uint8_t pirPin, uint8_t switchPin) {
 		true,
 		gpioCallback
 	);
+
+	initSeqs();
 }
 
 BladeMgr::~BladeMgr() {
@@ -56,8 +60,8 @@ void BladeMgr::loopForever(){
 	for(;;){
 		if (req.readFromQueue()){
 			switch(req.getReq()){
-			case BladeColour: {
-				setColour(req.getRed(),
+			case BladeDRGB: {
+				setColour(true, req.getRed(),
 						req.getGreen(),
 						req.getBlue()
 						);
@@ -84,6 +88,13 @@ void BladeMgr::loopForever(){
 				xTimeTurnedOn = 0;
 			}
 		}
+
+		if (xDay){
+			getBladeSeqs()->tick(&xDayColour, &ledStrip, LEDS_LENGTH);
+		} else {
+			getBladeSeqs()->tick(&xNightColour, &ledStrip, LEDS_LENGTH);
+		}
+
 	}
 
 
@@ -92,8 +103,26 @@ void BladeMgr::loopForever(){
 void BladeMgr::turnOn(bool remote){
 	BladeRequest req;
 
-	ledStrip.fill( PicoLed::RGB(red, green, blue));
+
+	/*
+	ledStrip.fill( PicoLed::RGB(
+			xDayColour.getRed(),
+			xDayColour.getGreen(),
+			xDayColour.getBlue()
+			));
 	ledStrip.show();
+	*/
+
+
+
+	if (xDay){
+		getBladeSeqs()->on(&xDayColour, &ledStrip, LEDS_LENGTH);
+	} else {
+		getBladeSeqs()->on(&xNightColour, &ledStrip, LEDS_LENGTH);
+	}
+
+
+
 	xTimeTurnedOn = to_ms_since_boot(get_absolute_time());
 
 	if (!remote){
@@ -106,8 +135,19 @@ void BladeMgr::turnOn(bool remote){
 void BladeMgr::turnOff(bool remote){
 	BladeRequest req;
 
-	ledStrip.clear();
-	ledStrip.show();
+
+	//ledStrip.clear();
+	//ledStrip.show();
+
+
+	if (xDay){
+		getBladeSeqs()->off(&xDayColour, &ledStrip, LEDS_LENGTH);
+	} else {
+		getBladeSeqs()->off(&xNightColour, &ledStrip, LEDS_LENGTH);
+	}
+
+
+
 	xTimeTurnedOn = 0;
 
 	if (!remote){
@@ -119,10 +159,12 @@ void BladeMgr::turnOff(bool remote){
 
 
 
-void BladeMgr::setColour(uint8_t r, uint8_t g, uint8_t b){
-	red = r;
-	green = g;
-	blue = b;
+void BladeMgr::setColour( bool day, uint8_t r, uint8_t g, uint8_t b){
+	if (day){
+		xDayColour.set(r, g, b);
+	} else {
+		xNightColour.set(r, g, b);
+	}
 }
 
 
@@ -163,5 +205,14 @@ void BladeMgr::handleShortPress(){
 
 void BladeMgr::handleLongPress(){
 	turnOn();
+}
+
+void BladeMgr::initSeqs(){
+	xpBladeSeqs[0] = new BladeSeqBinary;
+}
+
+
+BladeSeqInterface *  BladeMgr::getBladeSeqs(){
+	return xpBladeSeqs[xSeqInd];
 }
 

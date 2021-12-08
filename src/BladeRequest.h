@@ -12,7 +12,7 @@
 #include "pico/stdlib.h"
 #include <stdint.h>
 
-enum BladeReqType {BladeOff, BladeOn, BladeColour};
+enum BladeReqType {BladeOff, BladeOn, BladeDRGB, BladeNRGB};
 
 class BladeRequest {
 public:

@@ -15,6 +15,9 @@
 #include "pico/stdlib.h"
 #include <stdint.h>
 
+#include "BladeColour.h"
+#include "BladeSeqInterface.h"
+
 class BladeMgr {
 public:
 	BladeMgr(uint8_t pirPin = 17, uint8_t switchPin = 16);
@@ -23,7 +26,7 @@ public:
 
 	void loopForever();
 
-	void setColour(uint8_t r, uint8_t g, uint8_t b);
+	void setColour(bool day, uint8_t r, uint8_t g, uint8_t b);
 
 	void turnOn(bool remote = false);
 
@@ -39,14 +42,18 @@ protected:
 
 
 private:
-	 static void gpioCallback (uint gpio, uint32_t events);
+	static void gpioCallback (uint gpio, uint32_t events);
 
+	void initSeqs();
 
+	BladeSeqInterface * getBladeSeqs();
 
-	uint8_t red = 0;
+	BladeColour xDayColour;
+	BladeColour xNightColour;
+	bool xDay = true;
 
-	uint8_t green = 0;
-	uint8_t blue = 0;
+	BladeSeqInterface *xpBladeSeqs[3];
+	uint8_t xSeqInd = 0;
 
 	uint8_t xPirPin = 0;
 	uint8_t xSwitchPin = 0;

@@ -86,7 +86,7 @@ const unsigned char* SaberState::getRGB() const{
 void SaberState::setRGB(unsigned char* newRGB){
 	memcpy(rgb, newRGB, 3);
 	BladeRequest req;
-	req.setReq(BladeColour);
+	req.setReq(BladeDRGB);
 	req.setColour((uint8_t)newRGB[0],(uint8_t) newRGB[1],(uint8_t) newRGB[2]);
 	req.writeToQueue();
 	setDirty(RGBSLOT);
@@ -103,7 +103,7 @@ void SaberState::setRGB(unsigned char r, unsigned char g, unsigned char b){
 	rgb[1] = g;
 	rgb[2] = b;
 	BladeRequest req;
-	req.setReq(BladeColour);
+	req.setReq(BladeDRGB);
 	req.setColour((uint8_t)r,(uint8_t) g,(uint8_t) b);
 	req.writeToQueue();
 	setDirty(RGBSLOT);
