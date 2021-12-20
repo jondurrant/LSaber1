@@ -16,15 +16,17 @@
 
 #define RGBSLOT 3
 #define ONSLOT  4
+#define IDSLOT 5
 
 /***
  * State will have 4 element two from StateTemperature and two added here
  */
 SaberState::SaberState() {
-	elements=5;
+	elements=6;
 
 	jsonHelpers[RGBSLOT] = (StateFunc)&SaberState::jsonRGB;
 	jsonHelpers[ONSLOT] = (StateFunc)&SaberState::jsonOn;
+	jsonHelpers[IDSLOT] = (StateFunc)&SaberState::jsonId;
 
 }
 
@@ -184,6 +186,13 @@ void SaberState::updateFromJson(json_t const *json){
 		}
 	}
 
+	jp = json_getProperty(json, "id");
+	if (jp){
+		if (JSON_INTEGER == json_getType(jp)){
+			setId(json_getInteger(jp));
+		}
+	}
+
 }
 
 /***
@@ -195,4 +204,25 @@ void SaberState::updateFromJson(json_t const *json){
 unsigned int SaberState::state(char *buf, unsigned int len){
 	updateTemp();
 	return StateTemp::state(buf, len);
+}
+
+uint8_t SaberState::getId() const {
+	return id;
+}
+
+void SaberState::setId(uint8_t id) {
+	this->id = id;
+	setDirty(ONSLOT);
+}
+
+/***
+ * Retried Id status in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonId(char *buf, unsigned int len){
+	char *p = buf;
+	p = json_uint( p, "id", getId(), &len);
+	return p;
 }

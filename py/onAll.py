@@ -9,14 +9,12 @@ port = 1883
 user = "mbp"
 passwd = "test"
 
-ping_topic = "TNG/" + targetId + "/TPC/PING"
+on_topic = "GRP/saber/on"
 connected_topic = "TNG/" + user + "/LC/ON"
 
-pong_topic = "TNG/" + targetId + "/TPC/PONG"
-lc_topic = "TNG/" + targetId + "/LC/#"
-state_topics = "TNG/" + targetId + "/STATE/#"
-get_topic = "TNG/" + targetId + "/STATE/GET"
-set_topic = "TNG/" + targetId + "/STATE/SET"
+pong_topic = "TNG/+/TPC/PONG"
+lc_topic = "TNG/+/LC/#"
+state_topic = "TNG/+/STATE/#"
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -45,18 +43,19 @@ client.loop_start()
 
 client.subscribe( lc_topic )
 client.subscribe( pong_topic )
-client.subscribe( state_topics )
+client.subscribe( state_topic )
     
 print("publishing connect")
 j = {'online':1}
 p = json.dumps(j)
 client.publish(connected_topic,p,retain=False,qos=1)
 
-
-j = {'GET': 1}
+id = 0
+j = {'id': id}
 p = json.dumps(j)
-print("Publishing ping %s"%p)
-infot = client.publish(get_topic, p,retain=False, qos=1)
+print("Publishing ON %s"%p)
+infot = client.publish(on_topic, p,retain=False, qos=1)
 infot.wait_for_publish()
+
 
 time.sleep(30)

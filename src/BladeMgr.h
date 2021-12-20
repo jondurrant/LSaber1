@@ -9,7 +9,7 @@
 #define BLADEMGR_H_
 
 #define LEDS_PIN 0
-#define LEDS_LENGTH 10
+#define LEDS_LENGTH 61
 
 #include <PicoLed.hpp>
 #include "pico/stdlib.h"
@@ -20,7 +20,7 @@
 
 class BladeMgr {
 public:
-	BladeMgr(uint8_t pirPin = 17, uint8_t switchPin = 16);
+	BladeMgr(uint8_t pirPin = 16, uint8_t switchPin = 18);
 	virtual ~BladeMgr();
 
 

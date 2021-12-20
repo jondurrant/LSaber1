@@ -209,8 +209,9 @@ void BladeMgr::handleLongPress(){
 }
 
 void BladeMgr::initSeqs(){
-	//xpBladeSeqs[0] = new BladeSeqBinary;
-	xpBladeSeqs[0] = new BladeSeqNewHope;
+	xpBladeSeqs[0] = new BladeSeqBinary;
+	xpBladeSeqs[1] = new BladeSeqNewHope;
+	xSeqInd = 1;
 }
 
 

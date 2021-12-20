@@ -3,20 +3,17 @@ import json
 import time
 
 
-targetId = "BCFF4D195C03"
+targetId = "jon"
 host = "pudev"
 port = 1883
 user = "mbp"
 passwd = "test"
 
-ping_topic = "TNG/" + targetId + "/TPC/PING"
+ping_topic = "GRP/ALL/PING"
 connected_topic = "TNG/" + user + "/LC/ON"
 
-pong_topic = "TNG/" + targetId + "/TPC/PONG"
-lc_topic = "TNG/" + targetId + "/LC/#"
-state_topics = "TNG/" + targetId + "/STATE/#"
-get_topic = "TNG/" + targetId + "/STATE/GET"
-set_topic = "TNG/" + targetId + "/STATE/SET"
+pong_topic = "TNG/+/TPC/PONG"
+lc_topic = "TNG/+/LC/#"
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -45,18 +42,21 @@ client.loop_start()
 
 client.subscribe( lc_topic )
 client.subscribe( pong_topic )
-client.subscribe( state_topics )
     
 print("publishing connect")
 j = {'online':1}
 p = json.dumps(j)
 client.publish(connected_topic,p,retain=False,qos=1)
 
+pingId = 0;
+for i in range(1):
+    j = {'id': pingId}
+    p = json.dumps(j)
+    print("Publishing ping %s"%p)
+    infot = client.publish(ping_topic, p,retain=False, qos=1)
+    infot.wait_for_publish()
+    pingId = pingId + 1
+    time.sleep(0.1)
 
-j = {'GET': 1}
-p = json.dumps(j)
-print("Publishing ping %s"%p)
-infot = client.publish(get_topic, p,retain=False, qos=1)
-infot.wait_for_publish()
 
 time.sleep(30)

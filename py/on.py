@@ -3,7 +3,7 @@ import json
 import time
 import random
 
-targetId = "jon"
+targetId = "BCFF4D195C03"
 host = "pudev"
 port = 1883
 user = "mbp"

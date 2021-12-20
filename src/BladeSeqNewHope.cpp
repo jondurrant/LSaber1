@@ -28,6 +28,8 @@ void BladeSeqNewHope::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedCon
 
 void BladeSeqNewHope::bladeOff(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
 	strip->clear();
-	bladeOn(length - count, c, strip, length);
+	if (count < length){
+		bladeOn(length - count, c, strip, length);
+	}
 }
 

@@ -65,6 +65,17 @@ public:
 	 */
 	virtual unsigned int state(char *buf, unsigned int len) ;
 
+	/***
+	 * Get Unit ID
+	 * @return
+	 */
+	uint8_t getId() const ;
+
+	/***
+	 * Set Unit ID
+	 * @param id
+	 */
+	void setId(uint8_t id = 0);
 
 protected:
 	/***
@@ -83,11 +94,22 @@ protected:
 	 */
 	char* jsonOn(char *buf, unsigned int len);
 
+	/***
+	 * Retried Id status in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonId(char *buf, unsigned int len);
+
+
 private:
 	//Light colour in RGB format, one bite per element
 	unsigned char rgb[3] = {0, 0, 0};
 	//Is light on
 	bool on = false;
+
+	uint8_t id = 0;
 
 };
 

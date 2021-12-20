@@ -43,6 +43,7 @@
 #include "SaberState.h"
 #include "BladeMgr.h"
 #include "BladeStateAgent.h"
+#include "MQTTRouterSaber.h"
 
 
 void core1_entry() {
@@ -123,9 +124,12 @@ init_thread(void* pvParameters) {
 	char mqttTarget[] = MQTTHOST;
 	lwesp_port_t mqttPort = MQTTPORT;
 	char mqttUser[] = MQTTUSER;
+	char * pMqttUser = mqttUser;
 	char mqttPwd[] = MQTTPASSWD;
+	char macs[15];
 
-	MQTTRouterTwin mqttRouter;
+	//MQTTRouterTwin mqttRouter;
+	MQTTRouterSaber mqttRouter;
 	//StateExample state;
 	SaberState state;
 	ExampleAgentObserver agentObs;
@@ -143,11 +147,13 @@ init_thread(void* pvParameters) {
 	//Connect to WiFi
 	if (WifiHelper::connectToAp(SID, PASSWD)){
 		char ips[16];
-		char macs[15];
 		WifiHelper::getIPAddressStr(ips);
 		printf("WIFI IP %s\n", ips);
 		if (WifiHelper::getMACAddressStr(macs)){
 			printf("MAC %s\n", macs);
+			if (strcmp(mqttUser, "MAC") == 0){
+				pMqttUser = macs;
+			}
 		} else {
 			printf("MAC NOT AVAILABLE\n");
 		}
@@ -155,7 +161,7 @@ init_thread(void* pvParameters) {
 
 
 		//Set up the credentials so we have an ID for our thing
-		mqttAgent.credentials(mqttUser, mqttPwd);
+		mqttAgent.credentials(pMqttUser, mqttPwd);
 		mqttRouter.init(mqttAgent.getId(), &mqttAgent);
 
 		//Twin agent to manage the state

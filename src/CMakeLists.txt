@@ -12,6 +12,7 @@ add_executable(${NAME}
 		BladeSeqBinary.cpp
 		BladeSeqNewHope.cpp
 		BladeSeqAnim.cpp
+		MQTTRouterSaber.cpp
         )
 
 # Pull in our pico_stdlib which pulls in commonly used features
