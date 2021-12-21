@@ -65,11 +65,13 @@ void BladeStateAgent::run(){
 				if (req.getReq() == BladeOn){
 					if (pSaberState->getOn() == false){
 						pSaberState->setOn(true);
+						pubBladeState(true);
 					}
 				}
 				if (req.getReq() == BladeOff){
 					if (pSaberState->getOn() == true){
 						pSaberState->setOn(false);
+						pubBladeState(false);
 					}
 				}
 			}
@@ -85,4 +87,41 @@ void BladeStateAgent::run(){
 			}
 		}
 	}
+}
+
+/***
+ * Notification of a change of a state item with the State object.
+ * @param dirtyCode - Representation of item changed within state. Used to pull back delta
+ */
+void BladeStateAgent::notifyState(unsigned char dirtyCode){
+	TwinTask::notifyState(dirtyCode);
+
+
+}
+
+
+void BladeStateAgent::setTopics(char * onTopic, char * offTopic){
+	pOnTopic = onTopic;
+	pOffTopic = offTopic;
+}
+
+void BladeStateAgent::pubBladeState(bool on){
+	char msg[34];
+	SaberState *s = (SaberState *) pState;
+	if (on){
+		if (pOnTopic != NULL){
+			sprintf(msg, "{\"from\":\"%s\", \"id\":%d}",
+					mqttInterface->getId(), s->getId()
+					);
+			mqttInterface->pubToTopic(pOnTopic, msg, strlen(msg));
+		}
+	} else {
+		if (pOffTopic != NULL){
+			sprintf(msg, "{\"from\":\"%s\", \"id\":%d}",
+					mqttInterface->getId(), s->getId()
+					);
+			mqttInterface->pubToTopic(pOffTopic, msg, strlen(msg));
+		}
+	}
+
 }

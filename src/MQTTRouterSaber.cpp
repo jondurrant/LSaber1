@@ -87,19 +87,58 @@ void MQTTRouterSaber::route(const char *topic, size_t topicLen, const void * pay
 		return;
 	}
 
+
 	if (strlen(pGroupTopicOn) == topicLen){
 		if (memcmp(topic, pGroupTopicOn, topicLen)==0){
-			LogDebug(("Blade ON"));
-			pTwin->addMessage(STATE_ON, strlen(STATE_ON));
+			if (!fromSelf(payload)){
+				LogDebug(("Blade ON"));
+				pTwin->addMessage(STATE_ON, strlen(STATE_ON));
+			}
 		}
 	}
 	if (strlen(pGroupTopicOff) == topicLen){
 		if (memcmp(topic, pGroupTopicOff, topicLen)==0){
-			LogDebug(("Blade OFF"));
-			pTwin->addMessage(STATE_OFF,
-					strlen(STATE_OFF)
-					);
+			if (!fromSelf(payload)){
+				LogDebug(("Blade OFF"));
+				pTwin->addMessage(STATE_OFF,
+						strlen(STATE_OFF)
+						);
+			}
 		}
 	}
 }
 
+char* MQTTRouterSaber::getGroupTopicOff() const {
+	return pGroupTopicOff;
+}
+
+char* MQTTRouterSaber::getGroupTopicOn() const {
+	return pGroupTopicOn;
+}
+
+
+bool MQTTRouterSaber::fromSelf(const void * payload) {
+	json_t jsonBuf[SABER_JSON_BUF];
+
+	json_t const* json = json_create( ( char *)payload, jsonBuf, SABER_JSON_BUF );
+	if ( !json ) {
+		LogError( ("json create error") );
+		return false;
+	}
+
+	json_t const* from = json_getProperty(json, "from");
+	if (!from){
+		return false;
+	}
+
+	if (json_getType(from) != JSON_TEXT){
+		return false;
+	}
+
+	if ( strcmp(json_getValue(from), pInterface->getId()) == 0){
+		return true;
+	}
+
+	return false;
+
+}

@@ -115,11 +115,12 @@ void BladeMgr::turnOn(bool remote){
 	*/
 
 
-
-	if (xDay){
-		getBladeSeqs()->on(&xDayColour, &ledStrip, LEDS_LENGTH);
-	} else {
-		getBladeSeqs()->on(&xNightColour, &ledStrip, LEDS_LENGTH);
+	if (!isOn()){
+		if (xDay){
+			getBladeSeqs()->on(&xDayColour, &ledStrip, LEDS_LENGTH);
+		} else {
+			getBladeSeqs()->on(&xNightColour, &ledStrip, LEDS_LENGTH);
+		}
 	}
 
 
@@ -131,6 +132,7 @@ void BladeMgr::turnOn(bool remote){
 		req.writeToQueue();
 	}
 	//printf("\nBladeMgr on\n");
+	xOn = true;
 }
 
 void BladeMgr::turnOff(bool remote){
@@ -156,6 +158,8 @@ void BladeMgr::turnOff(bool remote){
 		req.writeToQueue();
 	}
 	//printf("\nBladeMgr off\n");
+
+	xOn = false;
 }
 
 
@@ -201,7 +205,11 @@ void BladeMgr::handleGPIO (uint gpio, uint32_t events){
 
 
 void BladeMgr::handleShortPress(){
-	turnOn();
+	if (isOn()){
+		turnOff();
+	} else {
+		turnOn();
+	}
 }
 
 void BladeMgr::handleLongPress(){
@@ -217,5 +225,9 @@ void BladeMgr::initSeqs(){
 
 BladeSeqInterface *  BladeMgr::getBladeSeqs(){
 	return xpBladeSeqs[xSeqInd];
+}
+
+bool BladeMgr::isOn(){
+	return xOn;
 }
 

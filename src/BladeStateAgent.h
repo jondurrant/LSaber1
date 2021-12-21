@@ -17,10 +17,25 @@ public:
 
 	virtual void start(UBaseType_t priority);
 
+	/***
+	 * Notification of a change of a state item with the State object.
+	 * @param dirtyCode - Representation of item changed within state. Used to pull back delta
+	 */
+	virtual void notifyState(unsigned char dirtyCode);
+
+	void setTopics(char * onTopic, char * offTopic);
+
 protected:
 	static void vTask( void * pvParameters );
 
 	virtual void run();
+
+
+	void pubBladeState(bool on);
+
+private:
+	char * pOnTopic = NULL;
+	char * pOffTopic = NULL;
 
 
 };

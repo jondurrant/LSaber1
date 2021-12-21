@@ -14,6 +14,8 @@
 #define OFF_TOPIC  	"off"
 #define ON_TOPIC	"on"
 
+#define SABER_JSON_BUF 5
+
 class MQTTRouterSaber : public MQTTRouterTwin {
 public:
 	MQTTRouterSaber();
@@ -45,9 +47,15 @@ public:
 	virtual void route(const char *topic, size_t topicLen, const void * payload,
 			size_t payloadLen, MQTTInterface *interface);
 
+	char* getGroupTopicOff() const ;
+
+	char* getGroupTopicOn() const ;
+
 private:
 	char * pGroupTopicOn = NULL;
 	char * pGroupTopicOff = NULL;
+
+	bool fromSelf(const void * payload);
 };
 
 #endif /* MQTTROUTERSABER_H_ */

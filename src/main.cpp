@@ -168,6 +168,7 @@ init_thread(void* pvParameters) {
 		xTwin.setStateObject(&state);
 		xTwin.setMQTTInterface(&mqttAgent);
 		xTwin.start(tskIDLE_PRIORITY+1);
+		xTwin.setTopics(mqttRouter.getGroupTopicOn(), mqttRouter.getGroupTopicOff());
 
 		//Start up a Ping agent to mange ping requests
 		xPing.setInterface(&mqttAgent);

@@ -32,6 +32,8 @@ public:
 
 	void turnOff(bool remote = false);
 
+	bool isOn();
+
 protected:
 
 	void handleGPIO(uint gpio, uint32_t events);
@@ -60,14 +62,17 @@ private:
 
 	uint32_t xTimeTurnedOn = 0;
 
-	uint32_t xOffTimeMS = 5000; //MS
+	uint32_t xOffTimeMS = 30000; //MS
 
 	uint32_t xSwitchTime = 0;
 
 	PicoLed::PicoLedController ledStrip = PicoLed::addLeds<PicoLed::WS2812B>(pio0, 0, LEDS_PIN, LEDS_LENGTH, PicoLed::FORMAT_GRB);
 
+	bool xOn = false;
 
 	static BladeMgr * pSelf;
+
+
 };
 
 #endif /* BLADEMGR_H_ */

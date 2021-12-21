@@ -12,6 +12,10 @@
 #include "StateTemp.h"
 #include <stdbool.h>
 
+#define SABER_RGB_SLOT 3
+#define SABER_ON_SLOT  4
+#define SABER_ID_SLOT 5
+
 class SaberState : public StateTemp{
 public:
 	SaberState();

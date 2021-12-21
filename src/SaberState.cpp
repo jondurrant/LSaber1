@@ -14,9 +14,7 @@
 #include "json-maker/json-maker.h"
 #include "BladeRequest.h"
 
-#define RGBSLOT 3
-#define ONSLOT  4
-#define IDSLOT 5
+
 
 /***
  * State will have 4 element two from StateTemperature and two added here
@@ -24,9 +22,9 @@
 SaberState::SaberState() {
 	elements=6;
 
-	jsonHelpers[RGBSLOT] = (StateFunc)&SaberState::jsonRGB;
-	jsonHelpers[ONSLOT] = (StateFunc)&SaberState::jsonOn;
-	jsonHelpers[IDSLOT] = (StateFunc)&SaberState::jsonId;
+	jsonHelpers[SABER_RGB_SLOT] = (StateFunc)&SaberState::jsonRGB;
+	jsonHelpers[SABER_ON_SLOT] = (StateFunc)&SaberState::jsonOn;
+	jsonHelpers[SABER_ID_SLOT] = (StateFunc)&SaberState::jsonId;
 
 }
 
@@ -62,7 +60,7 @@ void SaberState::setOn(bool b){
 	}
 	req.writeToQueue();
 
-	setDirty(ONSLOT);
+	setDirty(SABER_ON_SLOT);
 }
 
 /***
@@ -91,7 +89,7 @@ void SaberState::setRGB(unsigned char* newRGB){
 	req.setReq(BladeDRGB);
 	req.setColour((uint8_t)newRGB[0],(uint8_t) newRGB[1],(uint8_t) newRGB[2]);
 	req.writeToQueue();
-	setDirty(RGBSLOT);
+	setDirty(SABER_RGB_SLOT);
 }
 
 /***
@@ -108,7 +106,7 @@ void SaberState::setRGB(unsigned char r, unsigned char g, unsigned char b){
 	req.setReq(BladeDRGB);
 	req.setColour((uint8_t)r,(uint8_t) g,(uint8_t) b);
 	req.writeToQueue();
-	setDirty(RGBSLOT);
+	setDirty(SABER_RGB_SLOT);
 }
 
 /***
@@ -212,7 +210,7 @@ uint8_t SaberState::getId() const {
 
 void SaberState::setId(uint8_t id) {
 	this->id = id;
-	setDirty(ONSLOT);
+	setDirty(SABER_ON_SLOT);
 }
 
 /***
