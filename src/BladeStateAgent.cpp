@@ -65,8 +65,8 @@ void BladeStateAgent::run(){
 				if (req.getReq() == BladeOn){
 					if (pSaberState->getOn() == false){
 						pSaberState->setOn(true);
-						pubBladeState(true);
 					}
+					pubBladeState(true);
 				}
 				if (req.getReq() == BladeOff){
 					if (pSaberState->getOn() == true){
