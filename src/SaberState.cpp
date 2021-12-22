@@ -20,7 +20,7 @@
  * State will have 4 element two from StateTemperature and two added here
  */
 SaberState::SaberState() {
-	elements=11;
+	elements=12;
 
 	jsonHelpers[SABER_DAY_RGB_SLOT] = (StateFunc)&SaberState::jsonDayRGB;
 	jsonHelpers[SABER_NIGHT_RGB_SLOT] = (StateFunc)&SaberState::jsonNightRGB;
@@ -30,6 +30,7 @@ SaberState::SaberState() {
 	jsonHelpers[SABER_DAY_END_SLOT] = (StateFunc)&SaberState::jsonDayEnd;
 	jsonHelpers[SABER_DAY_SEQ_SLOT] = (StateFunc)&SaberState::jsonDaySeq;
 	jsonHelpers[SABER_NIGHT_SEQ_SLOT] = (StateFunc)&SaberState::jsonNightSeq;
+	jsonHelpers[SABER_DAY_SLOT] = (StateFunc)&SaberState::jsonDay;
 }
 
 /***
@@ -374,7 +375,7 @@ void SaberState::setDayStart(uint8_t xDayStart) {
  */
 char* SaberState::jsonDayStart(char *buf, unsigned int len){
 	char *p = buf;
-	p = json_uint( p, "daye", getDayStart(), &len);
+	p = json_uint( p, "days", getDayStart(), &len);
 	return p;
 }
 
@@ -386,7 +387,7 @@ char* SaberState::jsonDayStart(char *buf, unsigned int len){
  */
 char* SaberState::jsonDayEnd(char *buf, unsigned int len){
 	char *p = buf;
-	p = json_uint( p, "days", getDayEnd(), &len);
+	p = json_uint( p, "daye", getDayEnd(), &len);
 	return p;
 }
 
@@ -405,6 +406,10 @@ uint8_t SaberState::getDaySeq() const {
  */
 void SaberState::setDaySeq(uint8_t xSeq) {
 	this->xDaySeq = xSeq;
+	BladeRequest req;
+	req.setReq(BladeDSeq);
+	req.setSeq(xSeq);
+	req.writeToQueue();
 	setDirty(SABER_DAY_SEQ_SLOT);
 }
 
@@ -435,6 +440,10 @@ uint8_t SaberState::getNightSeq() const {
  */
 void SaberState::setNightSeq(uint8_t xSeq) {
 	this->xNightSeq = xSeq;
+	BladeRequest req;
+	req.setReq(BladeNSeq);
+	req.setSeq(xSeq);
+	req.writeToQueue();
 	setDirty(SABER_NIGHT_SEQ_SLOT);
 }
 
@@ -447,6 +456,42 @@ void SaberState::setNightSeq(uint8_t xSeq) {
 char* SaberState::jsonNightSeq(char *buf, unsigned int len){
 	char *p = buf;
 	p = json_uint( p, "nseq", getNightSeq(), &len);
+	return p;
+}
+
+/***
+ * Is in day mode
+ * @return
+ */
+bool SaberState::isDay() const {
+	return xDay;
+}
+
+/***
+ * Set day mode
+ * @param xDay
+ */
+void SaberState::setDay(bool xDay) {
+	this->xDay = xDay;
+	BladeRequest req;
+	if (xDay){
+		req.setReq(BladeDay);
+	} else {
+		req.setReq(BladeNight);
+	}
+	req.writeToQueue();
+	setDirty(SABER_DAY_SLOT);
+}
+
+/***
+ * Retried Seq number in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonDay(char *buf, unsigned int len){
+	char *p = buf;
+	p = json_bool( p, "day", isDay(), &len);
 	return p;
 }
 

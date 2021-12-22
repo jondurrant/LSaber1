@@ -122,3 +122,18 @@ void BladeRequest::set(uint32_t mesg){
 	//printf("Set %x [%x, %x, %x]\n", req, red, green, blue);
 }
 
+uint8_t BladeRequest::getSeq()  const{
+	return getRed();
+}
+
+void BladeRequest::setSeq(uint8_t seq){
+	setRed(seq);
+}
+
+void BladeRequest::setSource(BladeSourceType source){
+	setRed((uint8_t)source);
+}
+
+BladeSourceType BladeRequest::getSource (){
+	return (BladeSourceType) getRed();
+}

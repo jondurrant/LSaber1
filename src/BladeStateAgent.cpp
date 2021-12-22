@@ -10,6 +10,9 @@
 #include "BladeRequest.h"
 #include "SaberState.h"
 
+#include "hardware/rtc.h"
+
+
 BladeStateAgent::BladeStateAgent() {
 	// TODO Auto-generated constructor stub
 
@@ -66,12 +69,12 @@ void BladeStateAgent::run(){
 					if (pSaberState->getOn() == false){
 						pSaberState->setOn(true);
 					}
-					pubBladeState(true);
+					pubBladeState(true, req.getSource());
 				}
 				if (req.getReq() == BladeOff){
 					if (pSaberState->getOn() == true){
 						pSaberState->setOn(false);
-						pubBladeState(false);
+						pubBladeState(false, req.getSource());
 					}
 				}
 			}
@@ -86,6 +89,30 @@ void BladeStateAgent::run(){
 				}
 			}
 		}
+
+		//Check for day end
+		 datetime_t now;
+		 rtc_get_datetime(&now);
+		 if (now.min != xPrevMin){
+			 xPrevMin = now.min;
+			 if (
+					 (now.hour > pSaberState->getDayEnd()) &&
+					 (now.hour < pSaberState->getDayStart())
+				 ){
+				 //It's night
+				 if (pSaberState->isDay()){
+					 pSaberState->setDay(false);
+				 }
+			 } else {
+				 if (!pSaberState->isDay()){
+					 pSaberState->setDay(true);
+				 }
+			 }
+			 pSaberState->updateTemp();
+		 }
+
+
+
 	}
 }
 
@@ -105,20 +132,20 @@ void BladeStateAgent::setTopics(char * onTopic, char * offTopic){
 	pOffTopic = offTopic;
 }
 
-void BladeStateAgent::pubBladeState(bool on){
-	char msg[34];
+void BladeStateAgent::pubBladeState(bool on, BladeSourceType source){
+	char msg[44];
 	SaberState *s = (SaberState *) pState;
 	if (on){
 		if (pOnTopic != NULL){
-			sprintf(msg, "{\"from\":\"%s\", \"id\":%d}",
-					mqttInterface->getId(), s->getId()
+			sprintf(msg, "{\"from\":\"%s\", \"id\":%d, \"src\":%d}",
+					mqttInterface->getId(), s->getId(), source
 					);
 			mqttInterface->pubToTopic(pOnTopic, msg, strlen(msg));
 		}
 	} else {
 		if (pOffTopic != NULL){
-			sprintf(msg, "{\"from\":\"%s\", \"id\":%d}",
-					mqttInterface->getId(), s->getId()
+			sprintf(msg, "{\"from\":\"%s\", \"id\":%d, \"src\":%d}",
+					mqttInterface->getId(), s->getId(), source
 					);
 			mqttInterface->pubToTopic(pOffTopic, msg, strlen(msg));
 		}

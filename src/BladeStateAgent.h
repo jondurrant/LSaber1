@@ -9,6 +9,7 @@
 #define BLADESTATEAGENT_H_
 
 #include <TwinTask.h>
+#include "BladeRequest.h"
 
 class BladeStateAgent : public TwinTask {
 public:
@@ -31,11 +32,12 @@ protected:
 	virtual void run();
 
 
-	void pubBladeState(bool on);
+	void pubBladeState(bool on, BladeSourceType source);
 
 private:
 	char * pOnTopic = NULL;
 	char * pOffTopic = NULL;
+	uint8_t xPrevMin = 0;
 
 
 };

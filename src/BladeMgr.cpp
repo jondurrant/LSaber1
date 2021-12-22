@@ -71,12 +71,38 @@ void BladeMgr::loopForever(){
 
 				break;
 			}
+			case BladeNRGB: {
+				setColour(false, req.getRed(),
+						req.getGreen(),
+						req.getBlue()
+						);
+
+				//printf("\nBladeMgr colour\n");
+
+				break;
+			}
 			case BladeOn: {
-				turnOn(true);
+				turnOn(true, BladeSourceControl);
 				break;
 			}
 			case BladeOff: {
-				turnOff(true);
+				turnOff(true, BladeSourceControl);
+				break;
+			}
+			case BladeDSeq: {
+				setSeq(true, req.getSeq());
+				break;
+			}
+			case BladeNSeq: {
+				setSeq(false, req.getSeq());
+				break;
+			}
+			case BladeDay: {
+				xDay = true;
+				break;
+			}
+			case BladeNight: {
+				xDay = false;
 				break;
 			}
 			}
@@ -85,7 +111,7 @@ void BladeMgr::loopForever(){
 		if (xTimeTurnedOn != 0){
 			uint32_t timeOn = to_ms_since_boot(get_absolute_time()) - xTimeTurnedOn;
 			if (timeOn > xOffTimeMS){
-				turnOff(false);
+				turnOff(false, BladeSourceTimeout);
 				xTimeTurnedOn = 0;
 			}
 		}
@@ -101,19 +127,8 @@ void BladeMgr::loopForever(){
 
 }
 
-void BladeMgr::turnOn(bool remote){
+void BladeMgr::turnOn(bool remote,  BladeSourceType source){
 	BladeRequest req;
-
-
-	/*
-	ledStrip.fill( PicoLed::RGB(
-			xDayColour.getRed(),
-			xDayColour.getGreen(),
-			xDayColour.getBlue()
-			));
-	ledStrip.show();
-	*/
-
 
 	if (!isOn()){
 		if (xDay){
@@ -129,13 +144,14 @@ void BladeMgr::turnOn(bool remote){
 
 	if (!remote){
 		req.setReq(BladeOn);
+		req.setSource(source);
 		req.writeToQueue();
 	}
 	//printf("\nBladeMgr on\n");
 	xOn = true;
 }
 
-void BladeMgr::turnOff(bool remote){
+void BladeMgr::turnOff(bool remote,  BladeSourceType source){
 	BladeRequest req;
 
 
@@ -155,6 +171,7 @@ void BladeMgr::turnOff(bool remote){
 
 	if (!remote){
 		req.setReq(BladeOff);
+		req.setSource(source);
 		req.writeToQueue();
 	}
 	//printf("\nBladeMgr off\n");
@@ -181,7 +198,7 @@ void BladeMgr::gpioCallback (uint gpio, uint32_t events){
 void BladeMgr::handleGPIO (uint gpio, uint32_t events){
 	if (gpio == xPirPin){
 		if ((events & 0x08) > 0){
-			turnOn(false);
+			turnOn(false, BladeSourcePIR);
 		}
 	}
 
@@ -206,28 +223,41 @@ void BladeMgr::handleGPIO (uint gpio, uint32_t events){
 
 void BladeMgr::handleShortPress(){
 	if (isOn()){
-		turnOff();
+		turnOff(false, BladeSourceSwitch);
 	} else {
-		turnOn();
+		turnOn(false, BladeSourceSwitch);
 	}
 }
 
 void BladeMgr::handleLongPress(){
-	turnOn();
+	//turnOn();
+	xDay = ! xDay;
+	turnOn(false, BladeSourceSwitch);
 }
 
 void BladeMgr::initSeqs(){
 	xpBladeSeqs[0] = new BladeSeqBinary;
 	xpBladeSeqs[1] = new BladeSeqNewHope;
-	xSeqInd = 1;
+	xDaySeqInd = 1;
+	xNightSeqInd = 0;
 }
 
 
 BladeSeqInterface *  BladeMgr::getBladeSeqs(){
-	return xpBladeSeqs[xSeqInd];
+	return xpBladeSeqs[xDaySeqInd];
 }
 
 bool BladeMgr::isOn(){
 	return xOn;
+}
+
+void BladeMgr::setSeq(bool day, uint8_t seq){
+	if (seq < BLADE_SEQ_COUNT) {
+		if (day){
+			xDaySeqInd = seq;
+		} else {
+			xNightSeqInd = seq;
+		}
+	}
 }
 

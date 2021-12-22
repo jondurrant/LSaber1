@@ -21,6 +21,8 @@
 #define SABER_DAY_END_SLOT		8
 #define SABER_DAY_SEQ_SLOT		9
 #define SABER_NIGHT_SEQ_SLOT	10
+#define SABER_DAY_SLOT			11
+
 
 
 class SaberState : public StateTemp{
@@ -158,6 +160,18 @@ public:
 	 */
 	void setNightSeq(uint8_t xSeq = 0) ;
 
+	/***
+	 * Is in day mode
+	 * @return
+	 */
+	bool isDay() const ;
+
+	/***
+	 * Set day mode
+	 * @param xDay
+	 */
+	void setDay(bool xDay = true) ;
+
 protected:
 	/***
 	 * Retrieve RGB in json format
@@ -224,6 +238,14 @@ protected:
 	 */
 	char* jsonNightSeq(char *buf, unsigned int len);
 
+	/***
+	 * Retried Day in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonDay(char *buf, unsigned int len);
+
 private:
 	//Light colour in RGB format, one bite per element
 	uint8_t xDayRGB[3] = {0, 0, 0};
@@ -243,6 +265,7 @@ private:
 	//Sequence for Blade
 	uint8_t xDaySeq = 0;
 	uint8_t xNightSeq = 0;
+
 
 };
 

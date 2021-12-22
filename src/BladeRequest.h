@@ -12,7 +12,9 @@
 #include "pico/stdlib.h"
 #include <stdint.h>
 
-enum BladeReqType {BladeOff, BladeOn, BladeDRGB, BladeNRGB};
+enum BladeReqType {BladeOff, BladeOn, BladeDRGB, BladeNRGB, BladeDSeq, BladeNSeq, BladeDay, BladeNight};
+
+enum BladeSourceType {BladeSourceUnknown, BladeSourcePIR, BladeSourceSwitch, BladeSourceControl, BladeSourceTimeout };
 
 class BladeRequest {
 public:
@@ -44,6 +46,15 @@ public:
 	uint32_t get();
 
 	void set(uint32_t mesg);
+
+	uint8_t getSeq()  const;
+
+	void setSeq(uint8_t seq);
+
+	void setSource(BladeSourceType source);
+
+	BladeSourceType getSource ();
+
 
 private:
 	uint8_t red = 0;

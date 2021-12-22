@@ -17,6 +17,9 @@
 
 #include "BladeColour.h"
 #include "BladeSeqInterface.h"
+#include "BladeRequest.h"
+
+#define BLADE_SEQ_COUNT 2
 
 class BladeMgr {
 public:
@@ -28,11 +31,13 @@ public:
 
 	void setColour(bool day, uint8_t r, uint8_t g, uint8_t b);
 
-	void turnOn(bool remote = false);
+	void turnOn(bool remote = false, BladeSourceType source = BladeSourceUnknown);
 
-	void turnOff(bool remote = false);
+	void turnOff(bool remote = false,  BladeSourceType source = BladeSourceUnknown);
 
 	bool isOn();
+
+	void setSeq(bool day, uint8_t seq);
 
 protected:
 
@@ -55,7 +60,8 @@ private:
 	bool xDay = true;
 
 	BladeSeqInterface *xpBladeSeqs[3];
-	uint8_t xSeqInd = 0;
+	uint8_t xDaySeqInd = 0;
+	uint8_t xNightSeqInd = 0;
 
 	uint8_t xPirPin = 0;
 	uint8_t xSwitchPin = 0;
