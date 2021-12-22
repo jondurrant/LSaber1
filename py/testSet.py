@@ -50,7 +50,6 @@ def on_message(client, userdata, msg):
     if (msg.topic == upd_topic):
         s = msg.payload.decode('UTF-8')
         j = json.loads(s)
-        '''
         if "state" in j:
             s = j["state"]
             assert s["trn"] == trn
@@ -60,7 +59,7 @@ def on_message(client, userdata, msg):
             assert s["daye"] == dayE
             assert s["dseq"] == dseq
             assert s["nseq"] == nseq
-            '''
+
 
 client = mqtt.Client(client_id=user)
 client.username_pw_set(username=user, password=passwd)

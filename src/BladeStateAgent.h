@@ -21,7 +21,7 @@ public:
 	 * Notification of a change of a state item with the State object.
 	 * @param dirtyCode - Representation of item changed within state. Used to pull back delta
 	 */
-	virtual void notifyState(unsigned char dirtyCode);
+	virtual void notifyState(uint16_t dirtyCode);
 
 	void setTopics(char * onTopic, char * offTopic);
 
