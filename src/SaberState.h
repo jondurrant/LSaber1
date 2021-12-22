@@ -11,29 +11,48 @@
 #include <MQTTConfig.h>
 #include "StateTemp.h"
 #include <stdbool.h>
+#include <stdint.h>
 
-#define SABER_RGB_SLOT 3
-#define SABER_ON_SLOT  4
-#define SABER_ID_SLOT 5
+#define SABER_DAY_RGB_SLOT 		3
+#define SABER_NIGHT_RGB_SLOT 	4
+#define SABER_ON_SLOT  			5
+#define SABER_ID_SLOT 			6
+#define SABER_DAY_START_SLOT	7
+#define SABER_DAY_END_SLOT		8
+#define SABER_DAY_SEQ_SLOT		9
+#define SABER_NIGHT_SEQ_SLOT	10
+
 
 class SaberState : public StateTemp{
 public:
 	SaberState();
-	SaberState(const SaberState &other);
 	virtual ~SaberState();
 
 	/***
 	 * Get RGB as an array
 	 * @return unsigned char[]
 	 */
-	const unsigned char* getRGB() const;
+	const uint8_t* getDayRGB() const;
+
+	/***
+	 * Get RGB as an array
+	 * @return unsigned char[]
+	 */
+	const uint8_t* getNightRGB() const;
 
 	/***
 	 * Sets RGB based on array provided.
 	 * Copies array so no need to allocate parameter
-	 * @param newRGB - unsigned char[3]
+	 * @param newRGB - uint8_t[3]
 	 */
-	void setRGB(unsigned char* newRGB);
+	void setDayRGB(uint8_t* newRGB);
+
+	/***
+	 * Sets RGB based on array provided.
+	 * Copies array so no need to allocate parameter
+	 * @param newRGB - uint8_t[3]
+	 */
+	void setNightRGB(uint8_t* newRGB);
 
 	/***
 	 * Sets RGB based on three parameters
@@ -41,7 +60,15 @@ public:
 	 * @param g
 	 * @param b
 	 */
-	void setRGB(unsigned char r, unsigned char g, unsigned char b);
+	void setDayRGB(uint8_t r,  uint8_t g, uint8_t  b);
+
+	/***
+	 * Sets RGB based on three parameters
+	 * @param r
+	 * @param g
+	 * @param b
+	 */
+	void setNightRGB(uint8_t r,  uint8_t g, uint8_t  b);
 
 	/***
 	 * Gets the On status of the light
@@ -81,6 +108,56 @@ public:
 	 */
 	void setId(uint8_t id = 0);
 
+	/***
+	 * Returns hour at which Day Ends
+	 * @return
+	 */
+	uint8_t getDayEnd() const ;
+
+	/***
+	 * Sets hour at which day ends
+	 * @param DayEnd
+	 */
+	void setDayEnd(uint8_t xDayEnd = 21) ;
+
+	/***
+	 * Get Start Day Hour
+	 * @return start hour
+	 */
+	uint8_t getDayStart() const ;
+
+	/***
+	 * Sets Day start hour
+	 * @param xDayStart
+	 */
+	void setDayStart(uint8_t xDayStart = 7) ;
+
+	/***
+	 * Get the sequence for the blade
+	 * int number of the sequence.
+	 * @return
+	 */
+	uint8_t getDaySeq() const ;
+
+	/***
+	 * Set the sequence number for the blade
+	 * @param xSeq
+	 */
+	void setDaySeq(uint8_t xSeq = 0) ;
+
+	/***
+	 * Get the sequence for the blade
+	 * int number of the sequence.
+	 * @return
+	 */
+	uint8_t getNightSeq() const ;
+
+	/***
+	 * Set the sequence number for the blade
+	 * @param xSeq
+	 */
+	void setNightSeq(uint8_t xSeq = 0) ;
+
 protected:
 	/***
 	 * Retrieve RGB in json format
@@ -88,7 +165,15 @@ protected:
 	 * @param len
 	 * @return
 	 */
-	char* jsonRGB(char *buf, unsigned int len);
+	char* jsonDayRGB(char *buf, unsigned int len);
+
+	/***
+	 * Retrieve RGB in json format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonNightRGB(char *buf, unsigned int len);
 
 	/***
 	 * Retried On status in JSON format
@@ -107,13 +192,57 @@ protected:
 	char* jsonId(char *buf, unsigned int len);
 
 
+	/***
+	 * Retried Day Start Hour status in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonDayStart(char *buf, unsigned int len);
+
+	/***
+	 * Retried Day End Hour status in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonDayEnd(char *buf, unsigned int len);
+
+	/***
+	 * Retried Seq number in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonDaySeq(char *buf, unsigned int len);
+
+	/***
+	 * Retried Seq number in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonNightSeq(char *buf, unsigned int len);
+
 private:
 	//Light colour in RGB format, one bite per element
-	unsigned char rgb[3] = {0, 0, 0};
-	//Is light on
-	bool on = false;
+	uint8_t xDayRGB[3] = {0, 0, 0};
+	uint8_t xNightRGB[3] = {0, 0, 0};
 
-	uint8_t id = 0;
+	//Is light on
+	bool xOn = false;
+
+	//ID could be used to group lights for delay turn on
+	uint8_t xId = 0;
+
+	//Dat start and end
+	uint8_t xDayStart = 7;
+	uint8_t xDayEnd = 21;
+	bool xDay = true;
+
+	//Sequence for Blade
+	uint8_t xDaySeq = 0;
+	uint8_t xNightSeq = 0;
 
 };
 

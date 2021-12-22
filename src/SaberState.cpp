@@ -20,12 +20,16 @@
  * State will have 4 element two from StateTemperature and two added here
  */
 SaberState::SaberState() {
-	elements=6;
+	elements=11;
 
-	jsonHelpers[SABER_RGB_SLOT] = (StateFunc)&SaberState::jsonRGB;
+	jsonHelpers[SABER_DAY_RGB_SLOT] = (StateFunc)&SaberState::jsonDayRGB;
+	jsonHelpers[SABER_NIGHT_RGB_SLOT] = (StateFunc)&SaberState::jsonNightRGB;
 	jsonHelpers[SABER_ON_SLOT] = (StateFunc)&SaberState::jsonOn;
 	jsonHelpers[SABER_ID_SLOT] = (StateFunc)&SaberState::jsonId;
-
+	jsonHelpers[SABER_DAY_START_SLOT] = (StateFunc)&SaberState::jsonDayStart;
+	jsonHelpers[SABER_DAY_END_SLOT] = (StateFunc)&SaberState::jsonDayEnd;
+	jsonHelpers[SABER_DAY_SEQ_SLOT] = (StateFunc)&SaberState::jsonDaySeq;
+	jsonHelpers[SABER_NIGHT_SEQ_SLOT] = (StateFunc)&SaberState::jsonNightSeq;
 }
 
 /***
@@ -35,23 +39,15 @@ SaberState::~SaberState() {
 	// TODO Auto-generated destructor stub
 }
 
-/***
- * Copy constructor
- * @param other
- */
-SaberState::SaberState(const SaberState &other) {
-	on = other.getOn();
-	memcpy(rgb, other.getRGB(), 3);
-}
 
 /***
  * Set On status of switch
  * @param bool
  */
 void SaberState::setOn(bool b){
-	on = b;
+	xOn = b;
 	BladeRequest req;
-	if (on == true){
+	if (xOn == true){
 		req.setReq(BladeOn);
 		LogDebug(("ON"));
 	} else {
@@ -68,28 +64,49 @@ void SaberState::setOn(bool b){
  * @return
  */
 bool SaberState::getOn() const{
-	return on;
+	return xOn;
 }
 
 /***
  * get RGB status as array of unsigned chars
- * @return unsigned char[3]
+ * @return uint8_t[3]
  */
-const unsigned char* SaberState::getRGB() const{
-	return rgb;
+const uint8_t * SaberState::getDayRGB() const{
+	return xDayRGB;
+}
+
+/***
+ * get RGB status as array of unsigned chars
+ * @return uint8_t[3]
+ */
+const uint8_t * SaberState::getNightRGB() const{
+	return xNightRGB;
 }
 
 /***
  * sets the RGB based on an array of RGN value
- * @param newRGB unsigned char [r, g, b]
+ * @param newRGB uint8_t [r, g, b]
  */
-void SaberState::setRGB(unsigned char* newRGB){
-	memcpy(rgb, newRGB, 3);
+void SaberState::setDayRGB(uint8_t* newRGB){
+	memcpy(xDayRGB, newRGB, 3);
 	BladeRequest req;
 	req.setReq(BladeDRGB);
 	req.setColour((uint8_t)newRGB[0],(uint8_t) newRGB[1],(uint8_t) newRGB[2]);
 	req.writeToQueue();
-	setDirty(SABER_RGB_SLOT);
+	setDirty(SABER_DAY_RGB_SLOT);
+}
+
+/***
+ * sets the RGB based on an array of RGN value
+ * @param newRGB uint8_t [r, g, b]
+ */
+void SaberState::setNightRGB(uint8_t* newRGB){
+	memcpy(xNightRGB, newRGB, 3);
+	BladeRequest req;
+	req.setReq(BladeNRGB);
+	req.setColour((uint8_t)newRGB[0],(uint8_t) newRGB[1],(uint8_t) newRGB[2]);
+	req.writeToQueue();
+	setDirty(SABER_DAY_RGB_SLOT);
 }
 
 /***
@@ -98,15 +115,32 @@ void SaberState::setRGB(unsigned char* newRGB){
  * @param g
  * @param b
  */
-void SaberState::setRGB(unsigned char r, unsigned char g, unsigned char b){
-	rgb[0] = r;
-	rgb[1] = g;
-	rgb[2] = b;
+void SaberState::setDayRGB( uint8_t r,  uint8_t g, uint8_t  b){
+	xDayRGB[0] = r;
+	xDayRGB[1] = g;
+	xDayRGB[2] = b;
 	BladeRequest req;
 	req.setReq(BladeDRGB);
 	req.setColour((uint8_t)r,(uint8_t) g,(uint8_t) b);
 	req.writeToQueue();
-	setDirty(SABER_RGB_SLOT);
+	setDirty(SABER_DAY_RGB_SLOT);
+}
+
+/***
+ * Sets RGB based on three parameters
+ * @param r
+ * @param g
+ * @param b
+ */
+void SaberState::setNightRGB( uint8_t r,  uint8_t g, uint8_t  b){
+	xDayRGB[0] = r;
+	xDayRGB[1] = g;
+	xDayRGB[2] = b;
+	BladeRequest req;
+	req.setReq(BladeNRGB);
+	req.setColour((uint8_t)r,(uint8_t) g,(uint8_t) b);
+	req.writeToQueue();
+	setDirty(SABER_DAY_RGB_SLOT);
 }
 
 /***
@@ -127,15 +161,32 @@ char* SaberState::jsonOn(char *buf, unsigned int len){
  * @param len
  * @return
  */
-char* SaberState::jsonRGB(char *buf, unsigned int len){
+char* SaberState::jsonDayRGB(char *buf, unsigned int len){
 	char *p = buf;
-    p = json_arrOpen( p, "rgb", &len);
+    p = json_arrOpen( p, "drgb", &len);
     for (unsigned char i=0; i < 3; i++){
-    	p = json_uint( p, NULL, getRGB()[i], &len );
+    	p = json_uint( p, NULL, getDayRGB()[i], &len );
     }
     p = json_arrClose( p, &len);
     return p;
 }
+
+/***
+ * Retrieve RGB valueu in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonNightRGB(char *buf, unsigned int len){
+	char *p = buf;
+    p = json_arrOpen( p, "nrgb", &len);
+    for (unsigned char i=0; i < 3; i++){
+    	p = json_uint( p, NULL, getNightRGB()[i], &len );
+    }
+    p = json_arrClose( p, &len);
+    return p;
+}
+
 
 /***
 * Update state data from a json structure
@@ -156,7 +207,7 @@ void SaberState::updateFromJson(json_t const *json){
 		}
 	}
 
-	jp = json_getProperty(json, "rgb");
+	jp = json_getProperty(json, "drgb");
 	if (jp){
 		if (JSON_ARRAY == json_getType(jp)){
 			jp = json_getChild(jp);
@@ -179,7 +230,35 @@ void SaberState::updateFromJson(json_t const *json){
 				jp = json_getSibling(jp);
 			}
 			if (rgbOK){
-				setRGB(newRGB);
+				setDayRGB(newRGB);
+			}
+		}
+	}
+
+	jp = json_getProperty(json, "nrgb");
+	if (jp){
+		if (JSON_ARRAY == json_getType(jp)){
+			jp = json_getChild(jp);
+			for (unsigned char i=0; i < 3; i++){
+				if (jp){
+					if (JSON_INTEGER == json_getType(jp)){
+						int col = json_getInteger(jp);
+						if ((col >= 0) && (col <= 0xFF)){
+							newRGB[i] = (unsigned char) col;
+						} else {
+							rgbOK = false;
+						}
+					}
+					else {
+						rgbOK = false;
+					}
+				} else {
+					rgbOK = false;
+				}
+				jp = json_getSibling(jp);
+			}
+			if (rgbOK){
+				setNightRGB(newRGB);
 			}
 		}
 	}
@@ -188,6 +267,34 @@ void SaberState::updateFromJson(json_t const *json){
 	if (jp){
 		if (JSON_INTEGER == json_getType(jp)){
 			setId(json_getInteger(jp));
+		}
+	}
+
+	jp = json_getProperty(json, "days");
+	if (jp){
+		if (JSON_INTEGER == json_getType(jp)){
+			setDayStart(json_getInteger(jp));
+		}
+	}
+
+	jp = json_getProperty(json, "daye");
+	if (jp){
+		if (JSON_INTEGER == json_getType(jp)){
+			setDayEnd(json_getInteger(jp));
+		}
+	}
+
+	jp = json_getProperty(json, "dseq");
+	if (jp){
+		if (JSON_INTEGER == json_getType(jp)){
+			setDaySeq(json_getInteger(jp));
+		}
+	}
+
+	jp = json_getProperty(json, "nseq");
+	if (jp){
+		if (JSON_INTEGER == json_getType(jp)){
+			setNightSeq(json_getInteger(jp));
 		}
 	}
 
@@ -205,11 +312,11 @@ unsigned int SaberState::state(char *buf, unsigned int len){
 }
 
 uint8_t SaberState::getId() const {
-	return id;
+	return xId;
 }
 
 void SaberState::setId(uint8_t id) {
-	this->id = id;
+	xId = id;
 	setDirty(SABER_ON_SLOT);
 }
 
@@ -224,3 +331,123 @@ char* SaberState::jsonId(char *buf, unsigned int len){
 	p = json_uint( p, "id", getId(), &len);
 	return p;
 }
+
+/***
+ * Returns hour at which Day Ends
+ * @return
+ */
+uint8_t SaberState::getDayEnd() const {
+	return xDayEnd;
+}
+
+/***
+ * Sets hour at which day ends
+ * @param DayEnd
+ */
+void SaberState::setDayEnd(uint8_t xDayEnd) {
+	this->xDayEnd = xDayEnd;
+	setDirty(SABER_DAY_END_SLOT);
+}
+
+/***
+ * Get Start Day Hour
+ * @return start hour
+ */
+uint8_t SaberState::getDayStart() const {
+	return xDayStart;
+}
+
+/***
+ * Sets Day start hour
+ * @param xDayStart
+ */
+void SaberState::setDayStart(uint8_t xDayStart) {
+	this->xDayStart = xDayStart;
+	setDirty(SABER_DAY_START_SLOT);
+}
+
+/***
+ * Retried Day Start Hour status in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonDayStart(char *buf, unsigned int len){
+	char *p = buf;
+	p = json_uint( p, "daye", getDayStart(), &len);
+	return p;
+}
+
+/***
+ * Retried Day End Hour status in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonDayEnd(char *buf, unsigned int len){
+	char *p = buf;
+	p = json_uint( p, "days", getDayEnd(), &len);
+	return p;
+}
+
+/***
+ * Get the sequence for the blade
+ * int number of the sequence.
+ * @return
+ */
+uint8_t SaberState::getDaySeq() const {
+	return xDaySeq;
+}
+
+/***
+ * Set the sequence number for the blade
+ * @param xSeq
+ */
+void SaberState::setDaySeq(uint8_t xSeq) {
+	this->xDaySeq = xSeq;
+	setDirty(SABER_DAY_SEQ_SLOT);
+}
+
+/***
+ * Retried Seq number in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonDaySeq(char *buf, unsigned int len){
+	char *p = buf;
+	p = json_uint( p, "dseq", getDaySeq(), &len);
+	return p;
+}
+
+/***
+ * Get the sequence for the blade
+ * int number of the sequence.
+ * @return
+ */
+uint8_t SaberState::getNightSeq() const {
+	return xNightSeq;
+}
+
+/***
+ * Set the sequence number for the blade
+ * @param xSeq
+ */
+void SaberState::setNightSeq(uint8_t xSeq) {
+	this->xNightSeq = xSeq;
+	setDirty(SABER_NIGHT_SEQ_SLOT);
+}
+
+/***
+ * Retried Seq number in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonNightSeq(char *buf, unsigned int len){
+	char *p = buf;
+	p = json_uint( p, "nseq", getNightSeq(), &len);
+	return p;
+}
+
+
