@@ -10,6 +10,9 @@
 
 #include "BladeSeqBinary.h"
 #include "BladeSeqNewHope.h"
+#include "BladeSeqWand.h"
+#include "BladeSeqCandle.h"
+#include "BladeSeqSpark.h"
 
 #include "hardware/gpio.h"
 #include <stdio.h>
@@ -238,13 +241,20 @@ void BladeMgr::handleLongPress(){
 void BladeMgr::initSeqs(){
 	xpBladeSeqs[0] = new BladeSeqBinary;
 	xpBladeSeqs[1] = new BladeSeqNewHope;
-	xDaySeqInd = 1;
+	xpBladeSeqs[2] = new BladeSeqWand;
+	xpBladeSeqs[3] = new BladeSeqCandle;
+	xpBladeSeqs[4] = new BladeSeqSpark;
+	xDaySeqInd = 4;
 	xNightSeqInd = 0;
 }
 
 
 BladeSeqInterface *  BladeMgr::getBladeSeqs(){
-	return xpBladeSeqs[xDaySeqInd];
+	if (xDay){
+		return xpBladeSeqs[xDaySeqInd];
+	} else {
+		return xpBladeSeqs[xNightSeqInd];
+	}
 }
 
 bool BladeMgr::isOn(){

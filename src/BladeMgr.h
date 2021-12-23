@@ -19,7 +19,7 @@
 #include "BladeSeqInterface.h"
 #include "BladeRequest.h"
 
-#define BLADE_SEQ_COUNT 2
+#define BLADE_SEQ_COUNT 5
 
 class BladeMgr {
 public:
@@ -59,7 +59,7 @@ private:
 	BladeColour xNightColour;
 	bool xDay = true;
 
-	BladeSeqInterface *xpBladeSeqs[3];
+	BladeSeqInterface *xpBladeSeqs[BLADE_SEQ_COUNT];
 	uint8_t xDaySeqInd = 0;
 	uint8_t xNightSeqInd = 0;
 

@@ -1,6 +1,8 @@
 import paho.mqtt.client as mqtt
 import json
 import time
+import random
+
 
 
 targetId = "BCFF4D195C03"
@@ -16,10 +18,10 @@ connected_topic = "TNG/" + user + "/LC/ON"
 pong_topic = "TNG/" + targetId + "/TPC/PONG"
 lc_topic = "TNG/" + targetId + "/LC/#"
 state_topics = "TNG/" + targetId + "/STATE/#"
-state2_topics = "TNG/" + target2Id + "/STATE/#"
 get_topic = "TNG/" + targetId + "/STATE/GET"
-get2_topic = "TNG/" + target2Id + "/STATE/GET"
 set_topic = "TNG/" + targetId + "/STATE/SET"
+set2_topic = "TNG/" + target2Id + "/STATE/SET"
+upd_topic = "TNG/" + targetId + "/STATE/UPD"
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -33,6 +35,8 @@ def on_connect(client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print("Rcv topic=" +msg.topic+" msg="+str(msg.payload))
+    
+
 
 client = mqtt.Client(client_id=user)
 client.username_pw_set(username=user, password=passwd)
@@ -49,7 +53,6 @@ client.loop_start()
 client.subscribe( lc_topic )
 client.subscribe( pong_topic )
 client.subscribe( state_topics )
-client.subscribe( state2_topics )
     
 print("publishing connect")
 j = {'online':1}
@@ -57,11 +60,49 @@ p = json.dumps(j)
 client.publish(connected_topic,p,retain=False,qos=1)
 
 
+
+
+j = {'delta': { 'trn': 5,
+                'drgb':[0, 0, 255], 
+                'nrgb':[255, 0, 0],
+                'on': True,
+                'id': 1,
+                'days': 7,
+                'daye': 21,
+                'dseq': 2,
+                'nseq': 0,
+                'day': False
+               }
+            }
+p = json.dumps(j)
+print("Publishing  %s"%p)
+infot = client.publish(set_topic, p,retain=False, qos=1)
+infot.wait_for_publish()
+
+j = {'delta': { 'trn': 5,
+                'drgb':[0, 0, 255], 
+                'nrgb':[255, 0, 0],
+                'on': True,
+                'id': 1,
+                'days': 7,
+                'daye': 21,
+                'dseq': 2,
+                'nseq': 0,
+                'day': True
+               }
+            }
+p = json.dumps(j)
+print("Publishing  %s"%p)
+infot = client.publish(set2_topic, p,retain=False, qos=1)
+infot.wait_for_publish()
+
+
+
+
 j = {'GET': 1}
 p = json.dumps(j)
-print("Publishing ping %s"%p)
+print("Publishing  %s"%p)
 infot = client.publish(get_topic, p,retain=False, qos=1)
-infot = client.publish(get2_topic, p,retain=False, qos=1)
 infot.wait_for_publish()
 
 time.sleep(30)

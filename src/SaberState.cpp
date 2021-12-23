@@ -299,6 +299,12 @@ void SaberState::updateFromJson(json_t const *json){
 		}
 	}
 
+	jp = json_getProperty(json, "day");
+	if (jp){
+		if (JSON_BOOLEAN == json_getType(jp)){
+			setDay(json_getBoolean(jp));
+		}
+	}
 }
 
 /***

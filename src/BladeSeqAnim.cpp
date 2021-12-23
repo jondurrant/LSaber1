@@ -39,7 +39,7 @@ void BladeSeqAnim::tick(BladeColour *c, PicoLed::PicoLedController *strip, uint8
 				xBladeSeq = BladeSeqOff;
 			} else {
 				bladeOn(length, c, strip, length);
-				xBladeSeq - BladeSeqOn;
+				xBladeSeq = BladeSeqOn;
 			}
 			lastStep = 0;
 			strip->show();
