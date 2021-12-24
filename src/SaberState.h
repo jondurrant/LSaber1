@@ -22,6 +22,7 @@
 #define SABER_DAY_SEQ_SLOT		9
 #define SABER_NIGHT_SEQ_SLOT	10
 #define SABER_DAY_SLOT			11
+#define SABER_TIMER_SLOT		12
 
 
 
@@ -172,6 +173,18 @@ public:
 	 */
 	void setDay(bool xDay = true) ;
 
+	/***
+	 * Get ON timer  in seconds
+	 * @return
+	 */
+	uint16_t getTimerS() const ;
+
+	/***
+	 * set ON timer in seconds
+	 * @param xTimerS
+	 */
+	void setTimerS(uint16_t xTimerS = 30) ;
+
 protected:
 	/***
 	 * Retrieve RGB in json format
@@ -246,6 +259,14 @@ protected:
 	 */
 	char* jsonDay(char *buf, unsigned int len);
 
+	/***
+	 * Retried Day in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonTimer(char *buf, unsigned int len);
+
 private:
 	//Light colour in RGB format, one bite per element
 	uint8_t xDayRGB[3] = {0, 0, 0};
@@ -266,7 +287,7 @@ private:
 	uint8_t xDaySeq = 0;
 	uint8_t xNightSeq = 0;
 
-
+	uint16_t xTimerS = 30;
 };
 
 #endif /* SABERSTATE_H_ */

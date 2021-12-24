@@ -20,7 +20,7 @@
  * State will have 4 element two from StateTemperature and two added here
  */
 SaberState::SaberState() {
-	elements=12;
+	elements=13;
 
 	jsonHelpers[SABER_DAY_RGB_SLOT] = (StateFunc)&SaberState::jsonDayRGB;
 	jsonHelpers[SABER_NIGHT_RGB_SLOT] = (StateFunc)&SaberState::jsonNightRGB;
@@ -31,6 +31,12 @@ SaberState::SaberState() {
 	jsonHelpers[SABER_DAY_SEQ_SLOT] = (StateFunc)&SaberState::jsonDaySeq;
 	jsonHelpers[SABER_NIGHT_SEQ_SLOT] = (StateFunc)&SaberState::jsonNightSeq;
 	jsonHelpers[SABER_DAY_SLOT] = (StateFunc)&SaberState::jsonDay;
+	jsonHelpers[SABER_TIMER_SLOT] = (StateFunc)&SaberState::jsonTimer;
+
+	setDay(true);
+	setDaySeq(xDaySeq);
+	setNightSeq(xNightSeq);
+	setTimerS(xTimerS);
 }
 
 /***
@@ -305,6 +311,13 @@ void SaberState::updateFromJson(json_t const *json){
 			setDay(json_getBoolean(jp));
 		}
 	}
+
+	jp = json_getProperty(json, "timer");
+	if (jp){
+		if (JSON_INTEGER == json_getType(jp)){
+			setTimerS(json_getInteger(jp));
+		}
+	}
 }
 
 /***
@@ -501,4 +514,36 @@ char* SaberState::jsonDay(char *buf, unsigned int len){
 	return p;
 }
 
+/***
+ * Get ON timer  in seconds
+ * @return
+ */
+uint16_t SaberState::getTimerS() const {
+	return xTimerS;
+}
+
+/***
+ * set ON timer in seconds
+ * @param xTimerS
+ */
+void SaberState::setTimerS(uint16_t xTimerS) {
+	this->xTimerS = xTimerS;
+	BladeRequest req;
+	req.setReq(BladeTimer);
+	req.setTimer(xTimerS);
+	req.writeToQueue();
+	setDirty(SABER_TIMER_SLOT);
+}
+
+/***
+ * Retried Day in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonTimer(char *buf, unsigned int len){
+	char *p = buf;
+	p = json_uint( p, "timer", getTimerS(), &len);
+	return p;
+}
 

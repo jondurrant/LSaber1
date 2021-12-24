@@ -109,6 +109,10 @@ void BladeMgr::loopForever(){
 				xDay = false;
 				break;
 			}
+			case BladeTimer: {
+				xOffTimeMS = req.getTimer() * 1000;
+				break;
+			}
 			}
 		}
 

@@ -137,3 +137,20 @@ void BladeRequest::setSource(BladeSourceType source){
 BladeSourceType BladeRequest::getSource (){
 	return (BladeSourceType) getRed();
 }
+
+
+void BladeRequest::setTimer(uint16_t seconds){
+	uint8_t b;
+
+	b = seconds & 0xFF;
+	setRed(b);
+	b = seconds << 8;
+	setGreen(b);
+}
+
+uint16_t BladeRequest::getTimer(){
+	uint16_t res;
+	res = getGreen() >> 8;
+	res = res | getRed();
+	return res;
+}

@@ -69,9 +69,10 @@ j = {'delta': { 'trn': 5,
                 'id': 1,
                 'days': 7,
                 'daye': 21,
-                'dseq': 2,
+                'dseq': 5,
                 'nseq': 0,
-                'day': False
+                'day': True,
+                'timer': 10
                }
             }
 p = json.dumps(j)
@@ -86,9 +87,10 @@ j = {'delta': { 'trn': 5,
                 'id': 1,
                 'days': 7,
                 'daye': 21,
-                'dseq': 2,
+                'dseq': 5,
                 'nseq': 0,
-                'day': True
+                'day': True,
+                'timer': 10
                }
             }
 p = json.dumps(j)
