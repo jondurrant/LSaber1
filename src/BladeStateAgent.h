@@ -11,6 +11,8 @@
 #include <TwinTask.h>
 #include "BladeRequest.h"
 
+#define JSON_ALERT "alert"
+
 class BladeStateAgent : public TwinTask {
 public:
 	BladeStateAgent();
@@ -30,6 +32,12 @@ protected:
 	static void vTask( void * pvParameters );
 
 	virtual void run();
+
+	/***
+	* Process a json message received
+	* @param str
+	*/
+	virtual void processJson(json_t const* json);
 
 
 	void pubBladeState(bool on, BladeSourceType source);

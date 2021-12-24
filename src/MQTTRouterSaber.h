@@ -13,6 +13,8 @@
 #define GROUP_NAME 	"saber"
 #define OFF_TOPIC  	"off"
 #define ON_TOPIC	"on"
+#define GROUP_ALL	"ALL"
+#define ALERT_TOPIC "ALERT"
 
 #define SABER_JSON_BUF 5
 
@@ -54,6 +56,7 @@ public:
 private:
 	char * pGroupTopicOn = NULL;
 	char * pGroupTopicOff = NULL;
+	char * pGroupTopicAlert = NULL;
 
 	bool fromSelf(const void * payload);
 };

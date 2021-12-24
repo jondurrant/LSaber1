@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include "json-maker/json-maker.h"
 #include "BladeRequest.h"
+#include <MQTTConfig.h>
 
 
 
@@ -546,4 +547,64 @@ char* SaberState::jsonTimer(char *buf, unsigned int len){
 	p = json_uint( p, "timer", getTimerS(), &len);
 	return p;
 }
+
+/***
+ * alert patturn
+ */
+void SaberState::alert(uint8_t lvl){
+	BladeRequest req;
+
+	LogDebug(("Alert %d", lvl));
+
+	switch(lvl){
+	case 1:{
+		req.setReq(BladeDRGB);
+		req.setRed(0);
+		req.setGreen(255);
+		req.setBlue(0);
+		req.writeToQueue();
+		break;
+	}
+	case 2: {
+		req.setReq(BladeDRGB);
+		req.setRed(255);
+		req.setGreen(0xBF);
+		req.setBlue(0);
+		req.writeToQueue();
+		break;
+	}
+	case 3: {
+		req.setReq(BladeDRGB);
+		req.setRed(255);
+		req.setGreen(0);
+		req.setBlue(0);
+		req.writeToQueue();
+		break;
+	}
+	default:{
+		setOn(false);
+		setDay(isDay());
+		setDaySeq(xDaySeq);
+		req.setReq(BladeDRGB);
+		req.setRed(getDayRGB()[0]);
+		req.setGreen(getDayRGB()[1]);
+		req.setBlue(getDayRGB()[2]);
+		req.writeToQueue();
+	}
+	}
+
+	if (lvl != 0){
+		req.setReq(BladeDSeq);
+		req.setSeq(0);
+		req.writeToQueue();
+
+		req.setReq(BladeDay);
+		req.writeToQueue();
+
+		setOn(true);
+	}
+
+}
+
+
 

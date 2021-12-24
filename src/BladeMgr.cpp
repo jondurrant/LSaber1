@@ -244,12 +244,12 @@ void BladeMgr::handleLongPress(){
 }
 
 void BladeMgr::initSeqs(){
-	xpBladeSeqs[0] = new BladeSeqBinary;
+	xpBladeSeqs[0] = new BladeSeqAlert;
 	xpBladeSeqs[1] = new BladeSeqNewHope;
 	xpBladeSeqs[2] = new BladeSeqWand;
 	xpBladeSeqs[3] = new BladeSeqCandle;
 	xpBladeSeqs[4] = new BladeSeqSpark;
-	xpBladeSeqs[5] = new BladeSeqAlert;
+	xpBladeSeqs[5] = new BladeSeqBinary;
 	xDaySeqInd = 5;
 	xNightSeqInd = 0;
 }

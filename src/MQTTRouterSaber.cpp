@@ -25,6 +25,10 @@ MQTTRouterSaber::~MQTTRouterSaber() {
 		vPortFree(pGroupTopicOff);
 		pGroupTopicOff = NULL;
 	}
+	if (pGroupTopicAlert != NULL){
+		vPortFree(pGroupTopicAlert);
+		pGroupTopicAlert = NULL;
+	}
 }
 
 /***
@@ -56,6 +60,17 @@ void MQTTRouterSaber::init(const char * id, MQTTInterface *mi){
 			LogError( ("Unable to allocate topic") );
 		}
 	}
+
+	if (pGroupTopicAlert == NULL){
+		pGroupTopicAlert = (char *)pvPortMalloc(
+				MQTTTopicHelper::lenGroupTopic(GROUP_ALL, ALERT_TOPIC)
+				);
+		if (pGroupTopicAlert != NULL){
+			MQTTTopicHelper::genGroupTopic(pGroupTopicAlert, GROUP_ALL, ALERT_TOPIC);
+		} else {
+			LogError( ("Unable to allocate topic") );
+		}
+	}
 }
 
 /***
@@ -67,7 +82,7 @@ void MQTTRouterSaber::subscribe(MQTTInterface *interface){
 
 	interface->subToTopic(pGroupTopicOn, 1);
 	interface->subToTopic(pGroupTopicOff, 1);
-
+	interface->subToTopic(pGroupTopicAlert, 1);
 }
 
 /***
@@ -104,6 +119,11 @@ void MQTTRouterSaber::route(const char *topic, size_t topicLen, const void * pay
 						strlen(STATE_OFF)
 						);
 			}
+		}
+	}
+	if (strlen(pGroupTopicAlert) == topicLen){
+		if (memcmp(topic, pGroupTopicAlert, topicLen)==0){
+			pTwin->addMessage((const char*)payload, payloadLen);
 		}
 	}
 }

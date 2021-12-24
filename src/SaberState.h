@@ -185,6 +185,11 @@ public:
 	 */
 	void setTimerS(uint16_t xTimerS = 30) ;
 
+	/***
+	 * alert patturn
+	 */
+	void alert(uint8_t lvl);
+
 protected:
 	/***
 	 * Retrieve RGB in json format
@@ -284,8 +289,8 @@ private:
 	bool xDay = true;
 
 	//Sequence for Blade
-	uint8_t xDaySeq = 0;
-	uint8_t xNightSeq = 0;
+	uint8_t xDaySeq = 4;
+	uint8_t xNightSeq = 3;
 
 	uint16_t xTimerS = 30;
 };

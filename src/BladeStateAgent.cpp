@@ -85,7 +85,7 @@ void BladeStateAgent::run(){
 								xMsg, STATE_MAX_MSG_LEN, 0);
 			if (size > 0){
 				if (pState != NULL){
-					processJson(xMsg);
+					processMsg(xMsg);
 				}
 			}
 		}
@@ -150,5 +150,24 @@ void BladeStateAgent::pubBladeState(bool on, BladeSourceType source){
 			mqttInterface->pubToTopic(pOffTopic, msg, strlen(msg));
 		}
 	}
+
+}
+
+/***
+* Process a json message received
+* @param str
+*/
+void BladeStateAgent::processJson(json_t const* json){
+	TwinTask::processJson(json);
+
+	json_t const* alert = json_getProperty(json, JSON_ALERT);
+	if (alert){
+		LogDebug(("Detected Alert"));
+		if (JSON_INTEGER == json_getType(alert)){
+			SaberState *s = (SaberState *) pState;
+			s->alert(json_getInteger(alert));
+		}
+	}
+
 
 }
