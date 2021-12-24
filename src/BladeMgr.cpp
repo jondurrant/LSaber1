@@ -13,6 +13,7 @@
 #include "BladeSeqWand.h"
 #include "BladeSeqCandle.h"
 #include "BladeSeqSpark.h"
+#include "BladeSeqAlert.h"
 
 #include "hardware/gpio.h"
 #include <stdio.h>
@@ -244,7 +245,8 @@ void BladeMgr::initSeqs(){
 	xpBladeSeqs[2] = new BladeSeqWand;
 	xpBladeSeqs[3] = new BladeSeqCandle;
 	xpBladeSeqs[4] = new BladeSeqSpark;
-	xDaySeqInd = 4;
+	xpBladeSeqs[5] = new BladeSeqAlert;
+	xDaySeqInd = 5;
 	xNightSeqInd = 0;
 }
 
