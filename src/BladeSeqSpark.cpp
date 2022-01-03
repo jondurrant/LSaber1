@@ -20,6 +20,7 @@ BladeSeqSpark::~BladeSeqSpark() {
 void BladeSeqSpark::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
 	uint8_t r,g,b;
 	int start, end;
+	float bright = 1.0;
 
 	uint8_t pixels = length / SPARK_FRACTION;
 	if (pixels < 0){
@@ -32,7 +33,14 @@ void BladeSeqSpark::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedContr
 		start = count - pixels;
 		end = count + pixels;
 
-	} else {
+		bright = 1.5;
+
+	} /*else if (count < (half + pixels)){
+		start = half - pixels;
+		end = half + pixels;
+
+		bright = 1.2;
+	} */else {
 		int burstStep = count - half;
 		pixels = pixels + burstStep;
 		start = half - pixels;
@@ -49,7 +57,14 @@ void BladeSeqSpark::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedContr
 	strip->clear();
 	//printf("ON %d, %d-%d\n", count, start, end);
 	for (uint8_t i = start; i < end; i++){
-		c->get(r, g, b, i, length);
+		if ((count < length) && (bright != 1.5)){
+			if ((i<start+2) || (i>end-3)) {
+				bright = 1.2;
+			} else {
+				bright = 1.0;
+			}
+		}
+		c->get(r, g, b, i, length, bright);
 		strip->setPixelColor(i, PicoLed::RGB(r, g, b));
 	}
 }
@@ -57,11 +72,14 @@ void BladeSeqSpark::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedContr
 void BladeSeqSpark::bladeOff(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
 	uint8_t r,g,b;
 	strip->clear();
+	float bright = (float)count / (float)length;
+	if (bright < 0.1)
+		bright = 0.1;
 
 	if (count < length){
 		uint8_t newCount = length - count;
 		for (uint i = 0; i < newCount; i++){
-			c->get(r, g, b, i, length);
+			c->get(r, g, b, i, length, bright);
 			strip->setPixelColor(i, PicoLed::RGB(r, g, b));
 		}
 	}

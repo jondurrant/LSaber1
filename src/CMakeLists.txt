@@ -17,6 +17,7 @@ add_executable(${NAME}
 		BladeSeqCandle.cpp
 		BladeSeqSpark.cpp
 		BladeSeqAlert.cpp
+		BladeSeqBright.cpp
         )
 
 # Pull in our pico_stdlib which pulls in commonly used features

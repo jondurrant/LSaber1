@@ -11,6 +11,7 @@
 #include "BladeSeqAnim.h"
 
 #define NEWHOPEMS 500
+#define SPARK_FRACTION 20
 
 class BladeSeqNewHope : public BladeSeqAnim {
 public:

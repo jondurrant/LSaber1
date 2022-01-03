@@ -14,6 +14,7 @@
 #include "BladeSeqCandle.h"
 #include "BladeSeqSpark.h"
 #include "BladeSeqAlert.h"
+#include "BladeSeqBright.h"
 
 #include "hardware/gpio.h"
 #include <stdio.h>
@@ -57,7 +58,7 @@ void BladeMgr::loopForever(){
 	uint32_t mesg;
 
 
-	ledStrip.setBrightness(64);
+	ledStrip.setBrightness(255);
 
 	ledStrip.fill( PicoLed::RGB(0xff, 0, 0) );
 	ledStrip.show();
@@ -250,7 +251,8 @@ void BladeMgr::initSeqs(){
 	xpBladeSeqs[3] = new BladeSeqCandle;
 	xpBladeSeqs[4] = new BladeSeqSpark;
 	xpBladeSeqs[5] = new BladeSeqBinary;
-	xDaySeqInd = 5;
+	xpBladeSeqs[6] = new BladeSeqBright;
+	xDaySeqInd = 6;
 	xNightSeqInd = 0;
 }
 

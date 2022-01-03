@@ -19,7 +19,7 @@
 #include "BladeSeqInterface.h"
 #include "BladeRequest.h"
 
-#define BLADE_SEQ_COUNT 6
+#define BLADE_SEQ_COUNT 7
 
 class BladeMgr {
 public:

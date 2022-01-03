@@ -32,7 +32,7 @@ public:
 	void set(uint8_t red, uint8_t green, uint8_t blue);
 
 	void get(uint8_t &r, uint8_t &g, uint8_t &b,
-			uint8_t led = 0, uint8_t length = 1);
+			uint8_t led = 0, uint8_t length = 1, float bright = 1.0);
 
 	bool isBlack();
 
