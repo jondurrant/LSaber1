@@ -29,6 +29,7 @@ BladeMgr::BladeMgr(uint8_t pirPin, uint8_t switchPin) {
 	//Set up PIR
 	gpio_init(xPirPin);
 	gpio_set_dir(xPirPin, GPIO_IN);
+	//gpio_pull_down(xPirPin);
 	gpio_set_irq_enabled_with_callback(xPirPin,
 		GPIO_IRQ_EDGE_RISE,
 		true,
@@ -207,7 +208,8 @@ void BladeMgr::gpioCallback (uint gpio, uint32_t events){
 void BladeMgr::handleGPIO (uint gpio, uint32_t events){
 	if (gpio == xPirPin){
 		if ((events & 0x08) > 0){
-			turnOn(false, BladeSourcePIR);
+			if (gpio_get(xPirPin))
+				turnOn(false, BladeSourcePIR);
 		}
 	}
 
