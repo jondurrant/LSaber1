@@ -7,9 +7,9 @@ import random
 
 targetId = "BCFF4D195C03"
 target2Id = "BCFF4D197AE6"
-host = "pudev"
+host = "nas3"
 port = 1883
-user = "super"
+user = "mbp"
 passwd = "test"
 
 ping_topic = "TNG/" + targetId + "/TPC/PING"
@@ -37,11 +37,15 @@ def on_message(client, userdata, msg):
     print("Rcv topic=" +msg.topic+" msg="+str(msg.payload))
     
 
+def on_disconnect():
+    print("DISCONNNECTED")
+
 
 client = mqtt.Client(client_id=user)
 client.username_pw_set(username=user, password=passwd)
 client.on_connect = on_connect
 client.on_message = on_message
+client.on_disconnect = on_disconnect
 j = {'online':0}
 p = json.dumps(j)
 client.will_set(connected_topic, p, qos=1, retain=False) #set will
@@ -76,7 +80,7 @@ j = {'delta': { 'trn': 5,
                }
             }
 p = json.dumps(j)
-print("Publishing  %s"%p)
+print("Publishing %s %s"%(set_topic,p))
 infot = client.publish(set_topic, p,retain=False, qos=1)
 infot.wait_for_publish()
 
@@ -94,7 +98,7 @@ j = {'delta': { 'trn': 5,
                }
             }
 p = json.dumps(j)
-print("Publishing  %s"%p)
+print("Publishing %s %s"%(set2_topic,p))
 infot = client.publish(set2_topic, p,retain=False, qos=1)
 infot.wait_for_publish()
 
