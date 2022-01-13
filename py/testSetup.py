@@ -7,7 +7,7 @@ import random
 
 targetId = "BCFF4D195C03"
 target2Id = "BCFF4D197AE6"
-host = "pudev"
+host = "nas3" #"pudev"
 port = 1883
 user = "super"
 passwd = "test"

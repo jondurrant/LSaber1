@@ -123,7 +123,6 @@ void BladeStateAgent::run(){
 void BladeStateAgent::notifyState(uint16_t dirtyCode){
 	TwinTask::notifyState(dirtyCode);
 
-
 }
 
 
