@@ -19,3 +19,6 @@
 [submodule "lib/PicoLED"]
 	path = lib/PicoLED
 	url = https://github.com/ForsakenNGS/PicoLED
+[submodule "lib/lwespFork"]
+	path = lib/lwespFork
+	url = https://github.com/jondurrant/lwespFork

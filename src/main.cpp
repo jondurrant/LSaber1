@@ -127,6 +127,7 @@ init_thread(void* pvParameters) {
 	char * pMqttUser = mqttUser;
 	char mqttPwd[] = MQTTPASSWD;
 	char macs[15];
+	bool ssl= false;
 
 	//MQTTRouterTwin mqttRouter;
 	MQTTRouterSaber mqttRouter;
@@ -146,6 +147,7 @@ init_thread(void* pvParameters) {
 
 	//Connect to WiFi
 	if (WifiHelper::connectToAp(SID, PASSWD)){
+//	if (WifiHelper::autoJoinOrConfig()){
 		char ips[16];
 		WifiHelper::getIPAddressStr(ips);
 		printf("WIFI IP %s\n", ips);
@@ -182,7 +184,12 @@ init_thread(void* pvParameters) {
 		//mqttAgent.setObserver(&agentObs);
 		mqttAgent.setObserver(&xLedMgr);
 		mqttAgent.setRouter(&mqttRouter);
-		mqttAgent.connect(mqttTarget, mqttPort, true);
+
+#ifdef MQTTSSL
+		ssl = true;
+#endif
+		mqttAgent.connect(mqttTarget, mqttPort, true, ssl);
+
 		mqttAgent.start(tskIDLE_PRIORITY+1);
 
 	} else {

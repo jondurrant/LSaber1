@@ -28,7 +28,8 @@ set(TWIN_THING_PICO_CONFIG_PATH ${CMAKE_CURRENT_LIST_DIR}/src/config)
 # Include required libraries
 include("lib/twinThingPicoESP/twinThingPicoESP.cmake")
 include("lib/FreeRTOS-Kernel.cmake")
-include("lib/lwesp.cmake")
+#include("lib/lwesp.cmake")
+include("lib/lwespFork.cmake")
 include("lib/RtosComponents/RTOSComponents.cmake")
 include("lib/PicoLED/PicoLed.cmake")
 
