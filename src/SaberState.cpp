@@ -8,6 +8,7 @@
 #include "SaberState.h"
 
 #include "hardware/adc.h"
+#include "hardware/rtc.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -21,7 +22,7 @@
  * State will have 4 element two from StateTemperature and two added here
  */
 SaberState::SaberState() {
-	elements=13;
+	elements=14;
 
 	jsonHelpers[SABER_DAY_RGB_SLOT] = (StateFunc)&SaberState::jsonDayRGB;
 	jsonHelpers[SABER_NIGHT_RGB_SLOT] = (StateFunc)&SaberState::jsonNightRGB;
@@ -33,6 +34,7 @@ SaberState::SaberState() {
 	jsonHelpers[SABER_NIGHT_SEQ_SLOT] = (StateFunc)&SaberState::jsonNightSeq;
 	jsonHelpers[SABER_DAY_SLOT] = (StateFunc)&SaberState::jsonDay;
 	jsonHelpers[SABER_TIMER_SLOT] = (StateFunc)&SaberState::jsonTimer;
+	jsonHelpers[SABER_CLOCK_SLOT] = (StateFunc)&SaberState::jsonClock;
 
 	setDay(true);
 	setDaySeq(xDaySeq);
@@ -114,7 +116,7 @@ void SaberState::setNightRGB(uint8_t* newRGB){
 	req.setReq(BladeNRGB);
 	req.setColour((uint8_t)newRGB[0],(uint8_t) newRGB[1],(uint8_t) newRGB[2]);
 	req.writeToQueue();
-	setDirty(SABER_DAY_RGB_SLOT);
+	setDirty(SABER_NIGHT_RGB_SLOT);
 }
 
 /***
@@ -148,7 +150,7 @@ void SaberState::setNightRGB( uint8_t r,  uint8_t g, uint8_t  b){
 	req.setReq(BladeNRGB);
 	req.setColour((uint8_t)r,(uint8_t) g,(uint8_t) b);
 	req.writeToQueue();
-	setDirty(SABER_DAY_RGB_SLOT);
+	setDirty(SABER_NIGHT_RGB_SLOT);
 }
 
 /***
@@ -549,6 +551,29 @@ char* SaberState::jsonTimer(char *buf, unsigned int len){
 }
 
 /***
+ * Retrieve Time in JSON format
+ * @param buf
+ * @param len
+ * @return
+ */
+char* SaberState::jsonClock(char *buf, unsigned int len){
+	char *p = buf;
+	char s[20];
+	datetime_t time;
+	rtc_get_datetime(&time);
+	sprintf(s,"%d-%d-%d %d:%d:%d",
+			time.year,  //4
+			time.month, //2
+			time.day,   //2
+			time.hour,  //2
+			time.min,   //2
+			time.sec    //2  //5
+			);
+	p = json_str(p, "clock", s, &len);
+	return p;
+}
+
+/***
  * alert patturn
  */
 void SaberState::alert(uint8_t lvl){
@@ -606,5 +631,11 @@ void SaberState::alert(uint8_t lvl){
 
 }
 
-
+/***
+* Update time and temp and trigger state update
+*/
+void SaberState::updateClock(){
+	setDirty(SABER_CLOCK_SLOT);
+	updateTemp();
+}
 

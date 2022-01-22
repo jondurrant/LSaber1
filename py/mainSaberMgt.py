@@ -37,8 +37,10 @@ def getSabers():
         "dseq",
         "nseq",
         "timer",
+        "temp",
         "on",
-        "temp"
+        "day",
+        "clock"
         ]
     
     select= ["clientId"]
@@ -98,7 +100,7 @@ def recordsToTable(recs, indexCol):
               }
     table = {"cols": [], "rows": []}
     
-    print("rec=%s\n"%json.dumps(recs))
+    #print("rec=%s\n"%json.dumps(recs))
     row = recs[0]
     
     for c in row:
@@ -107,7 +109,7 @@ def recordsToTable(recs, indexCol):
         nt = typeConv.get(t, str)
         table["cols"].append({"id": c, "type": nt, "label": c})
 
-    print("cols=%s\n"%json.dumps(table))
+    #print("cols=%s\n"%json.dumps(table))
     
     for r in recs:
         list=[]
@@ -120,7 +122,7 @@ def recordsToTable(recs, indexCol):
         row["c"]=list
         table["rows"].append(row)
         
-    print("rows=%s\n"%json.dumps(table))
+    #print("rows=%s\n"%json.dumps(table))
     return table
         
             

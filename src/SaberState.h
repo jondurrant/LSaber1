@@ -23,6 +23,7 @@
 #define SABER_NIGHT_SEQ_SLOT	10
 #define SABER_DAY_SLOT			11
 #define SABER_TIMER_SLOT		12
+#define SABER_CLOCK_SLOT		13
 
 
 
@@ -190,6 +191,11 @@ public:
 	 */
 	void alert(uint8_t lvl);
 
+	/***
+	 * Update time and temp and trigger state update
+	 */
+	void updateClock();
+
 protected:
 	/***
 	 * Retrieve RGB in json format
@@ -271,6 +277,14 @@ protected:
 	 * @return
 	 */
 	char* jsonTimer(char *buf, unsigned int len);
+
+	/***
+	 * Retried Time in JSON format
+	 * @param buf
+	 * @param len
+	 * @return
+	 */
+	char* jsonClock(char *buf, unsigned int len);
 
 private:
 	//Light colour in RGB format, one bite per element

@@ -96,7 +96,7 @@ void BladeStateAgent::run(){
 		 if (now.min != xPrevMin){
 			 xPrevMin = now.min;
 			 if (
-					 (now.hour > pSaberState->getDayEnd()) &&
+					 (now.hour >= pSaberState->getDayEnd()) ||
 					 (now.hour < pSaberState->getDayStart())
 				 ){
 				 //It's night
@@ -108,7 +108,9 @@ void BladeStateAgent::run(){
 					 pSaberState->setDay(true);
 				 }
 			 }
-			 pSaberState->updateTemp();
+			 //pSaberState->updateTemp();
+			 pSaberState->updateClock();
+
 		 }
 
 
