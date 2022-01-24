@@ -15,7 +15,6 @@
 
 
 
-
 //Local include file not in git repository, defining the credentials
 #include "Credentials.env"
 #ifndef SID
@@ -126,6 +125,7 @@ init_thread(void* pvParameters) {
 	char mqttUser[] = MQTTUSER;
 	char * pMqttUser = mqttUser;
 	char mqttPwd[] = MQTTPASSWD;
+	char * pMqttPwd = mqttPwd;
 	char macs[15];
 	bool ssl= false;
 
@@ -156,6 +156,9 @@ init_thread(void* pvParameters) {
 			if (strcmp(mqttUser, "MAC") == 0){
 				pMqttUser = macs;
 			}
+			if (strcmp(mqttPwd, "MAC") == 0){
+				pMqttPwd = macs;
+			}
 		} else {
 			printf("MAC NOT AVAILABLE\n");
 		}
@@ -163,7 +166,7 @@ init_thread(void* pvParameters) {
 
 
 		//Set up the credentials so we have an ID for our thing
-		mqttAgent.credentials(pMqttUser, mqttPwd);
+		mqttAgent.credentials(pMqttUser, pMqttPwd);
 		mqttRouter.init(mqttAgent.getId(), &mqttAgent);
 
 		//Twin agent to manage the state

@@ -4,17 +4,18 @@ import time
 
 
 targetId = "BCFF4D195C03"
-host = "pudev"
+host = "nas3"
 port = 1883
 user = "mbp"
-passwd = "test"
+passwd = "mbp"
 
-on_topic = "GRP/saber/on"
+on_topic = "GRP/saber/TPC/on"
 connected_topic = "TNG/" + user + "/LC/ON"
 
 pong_topic = "TNG/+/TPC/PONG"
 lc_topic = "TNG/+/LC/#"
 state_topic = "TNG/+/STATE/#"
+grp_topic = "GRP/saber/TPC/#"
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -41,9 +42,12 @@ client.connect(host, port, 60)
 
 client.loop_start()
 
+'''
 client.subscribe( lc_topic )
 client.subscribe( pong_topic )
 client.subscribe( state_topic )
+'''
+client.subscribe( grp_topic )
     
 print("publishing connect")
 j = {'online':1}

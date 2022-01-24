@@ -7,6 +7,7 @@
 
 #include "MQTTRouterSaber.h"
 #include <MQTTTopicHelper.h>
+#include "SaberState.h"
 
 #define STATE_ON "{\"delta\": {\"on\": true}}"
 #define STATE_OFF "{\"delta\": {\"on\": false}}"
@@ -106,8 +107,14 @@ void MQTTRouterSaber::route(const char *topic, size_t topicLen, const void * pay
 	if (strlen(pGroupTopicOn) == topicLen){
 		if (memcmp(topic, pGroupTopicOn, topicLen)==0){
 			if (!fromSelf(payload)){
-				LogDebug(("Blade ON"));
-				pTwin->addMessage(STATE_ON, strlen(STATE_ON));
+				//Filter to do only in day mode
+				SaberState * pSaber = (SaberState*) pTwin->getStateObject();
+				if (pSaber->isDay()){
+					LogDebug(("Blade ON"));
+					pTwin->addMessage(STATE_ON, strlen(STATE_ON));
+				} else {
+					LogDebug(("Blade ON request filtered as night"));
+				}
 			}
 		}
 	}

@@ -61,7 +61,7 @@ void BladeMgr::loopForever(){
 
 	ledStrip.setBrightness(255);
 
-	ledStrip.fill( PicoLed::RGB(0xff, 0, 0) );
+	ledStrip.fill( PicoLed::RGB(0, 0, 0) );
 	ledStrip.show();
 
 	for(;;){
@@ -164,15 +164,12 @@ void BladeMgr::turnOn(bool remote,  BladeSourceType source){
 void BladeMgr::turnOff(bool remote,  BladeSourceType source){
 	BladeRequest req;
 
-
-	//ledStrip.clear();
-	//ledStrip.show();
-
-
-	if (xDay){
-		getBladeSeqs()->off(&xDayColour, &ledStrip, LEDS_LENGTH);
-	} else {
-		getBladeSeqs()->off(&xNightColour, &ledStrip, LEDS_LENGTH);
+	if (isOn()){
+		if (xDay){
+			getBladeSeqs()->off(&xDayColour, &ledStrip, LEDS_LENGTH);
+		} else {
+			getBladeSeqs()->off(&xNightColour, &ledStrip, LEDS_LENGTH);
+		}
 	}
 
 
