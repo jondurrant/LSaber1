@@ -1,3 +1,8 @@
+#===============================================================================
+# Management application for Saber Lights
+# Jon Durrant 
+# 14-Jan-2022
+#===============================================================================
 from flask import Flask,flash, redirect, request, send_from_directory
 from flask import url_for, render_template
 import json
@@ -20,13 +25,18 @@ import datetime
 # set the project root directory as the static folder, you can set others.
 app = Flask(__name__, static_url_path='/static')
 
+#===============================================================================
+# Root page redirect
+#===============================================================================
 @app.route('/')
 def route():
     #return redirect("/static/html/index.html")
     return redirect("/static/html/Saber.html")
 
 
-
+#===============================================================================
+# Get current saber configuration
+#===============================================================================
 @app.route('/api/getSabers', methods = ['GET','POST'])
 def getSabers():
     columns=[
@@ -49,23 +59,19 @@ def getSabers():
         select.append("reported.%s"%c)
         asColumn.append(c)
     
-    '''
-    for c in columns:
-        select.append("desired.%s"%c)
-        asColumn.append("desired_%s"%c)
-    '''
-    
+    #Make sure we only pull back data on actual saber lights, as other things could be in group
     where = {'column': "reported.days", 'op': "<", 'value': 24}
     
     d = twinClient.query(select, asColumn, where, orient="records")
-    #frame = pd.read_json(json.dumps(d["res"]), orient="records")
-    #table = frameToTable(frame)
     if ("res" in d):
         table = recordsToTable(d["res"], "clientId")
     
         return table 
     return {}
     
+#===============================================================================
+# Set sabers to given values
+#===============================================================================
 @app.route('/api/setSabers', methods = ['GET','POST'])
 def setSabers():
     if (request.json != None):
@@ -81,6 +87,9 @@ def setSabers():
         
     return {}
       
+#===============================================================================
+# Turn all sabers on or off.
+#===============================================================================
 @app.route('/api/saberOn', methods = ['GET','POST'])
 def saberOn():
     if (request.json != None):
@@ -90,7 +99,9 @@ def saberOn():
         
     return {}  
     
-
+#===============================================================================
+# Convert a Pandas record json format into Google charts table format
+#===============================================================================
 def recordsToTable(recs, indexCol):
     typeConv={ str: "string",
                int: "number",
@@ -126,7 +137,9 @@ def recordsToTable(recs, indexCol):
     return table
         
             
-
+#===============================================================================
+# Start up the MQTT service
+#===============================================================================
 def startMQTT():
     global twinClient
     
@@ -135,12 +148,16 @@ def startMQTT():
     mqttPwd=os.environ.get("MQTT_PASSWD")
     mqttTarget= os.environ.get("MQTT_HOST")
     mqttPort=int(os.environ.get("MQTT_PORT"))
-    print("MQTT %s:%d - %s\n"%(mqttTarget,mqttPort, mqttUser))
+    mqttCert=os.environ.get("MQTT_CERT", None)
+    tls=""
+    if (mqttCert != None):
+        tls="TLS"
+    logging.info("MQTT %s:%d %s - %s\n"%(mqttTarget,mqttPort,tls,mqttUser))
     
     #The MQTT Client Agent
     mqttAgent = MQTTAgent(mqttUser)
     mqttAgent.credentials(mqttUser, mqttPwd)
-    mqttAgent.mqttHub(mqttTarget, mqttPort, True)
+    mqttAgent.mqttHub(mqttTarget, mqttPort, True, mqttCert)
     
     #Consigure the observers and routers
     mqttObs = MQTTObserver()
@@ -158,20 +175,16 @@ def startMQTT():
 
 if __name__ == "__main__":
     
-    logging.basicConfig(level="DEBUG", 
+    LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
+    logging.basicConfig(level=LOGLEVEL, 
                     format= '[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s')
-
-
-    unifi={}
+    
     app.secret_key = 'LCARS'
     app.config['SESSION_TYPE'] = 'filesystem'
     
-    
-   
-    
+    #Run MQTT Aget in a thread    
     thread = threading.Thread(target = startMQTT)
     thread.start()
-    
     
     app.run(host="0.0.0.0")
     
