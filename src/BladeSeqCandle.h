@@ -8,19 +8,20 @@
 #ifndef BLADESEQCANDLE_H_
 #define BLADESEQCANDLE_H_
 
-#include "BladeSeqAnim.h"
+#include "BladeSeqInterface.h"
 
 #define CANDLE_FRACTION 20
 
-class BladeSeqCandle : public BladeSeqAnim {
+class BladeSeqCandle : public BladeSeqInterface {
 public:
 	BladeSeqCandle();
 	virtual ~BladeSeqCandle();
 
-protected:
+	virtual void on(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
 
-	virtual void bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
-	virtual void bladeOff(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
+	virtual void off(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
+
+	virtual void tick(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
 
 };
 

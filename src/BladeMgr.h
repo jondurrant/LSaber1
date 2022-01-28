@@ -9,7 +9,7 @@
 #define BLADEMGR_H_
 
 #define LEDS_PIN 0
-#define LEDS_LENGTH 61
+#define LEDS_LENGTH 144 //61
 
 #include <PicoLed.hpp>
 #include "pico/stdlib.h"

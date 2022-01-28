@@ -17,7 +17,9 @@ BladeSeqCandle::~BladeSeqCandle() {
 	// TODO Auto-generated destructor stub
 }
 
-void BladeSeqCandle::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
+
+
+void BladeSeqCandle::on(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
 	uint8_t r,g,b;
 
 	uint8_t pixels = length / CANDLE_FRACTION;
@@ -25,26 +27,24 @@ void BladeSeqCandle::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedCont
 		pixels = 1;
 	}
 
-	strip->clear();
+	//strip->clear();
 	int start = length - pixels;
 	if (start < 0)
 		start = 0;
-	int end = count  + start;
-	if (end > length )
-		end = length;
 
-	//printf("ON %d, %d->%d\n", count, start, end);
-
-	for (uint i = start; i < end; i++){
+	for (uint i = start; i < length; i++){
 		c->get(r, g, b, i, length);
 		strip->setPixelColor(i, PicoLed::RGB(r, g, b));
 	}
+	strip->show();
 }
 
-void BladeSeqCandle::bladeOff(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
+void BladeSeqCandle::off(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
 	strip->clear();
-
-	if (count < length){
-		bladeOn(length - count, c, strip, length);
-	}
+	strip->show();
 }
+
+void BladeSeqCandle::tick(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
+	//NOP
+}
+

@@ -41,15 +41,24 @@ void BladeSeqWand::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedContro
 }
 
 void BladeSeqWand::bladeOff(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
-	strip->clear();
+	uint8_t r,g,b;
 
-	uint8_t pixels = length / WAND_FRACTION;
-	if (pixels < 0){
-		pixels = 1;
-	}
-	if (count > (length - pixels)){
-		if (count < length){
-			bladeOn(length - count, c, strip, length);
+	if (count < length){
+
+		uint8_t pixels = length / WAND_FRACTION;
+		if (pixels < 0){
+			pixels = 1;
+		}
+
+		if (count < pixels){
+			strip->clear();
+			uint8_t start = length - pixels;
+			for (uint8_t i = start; i < start + count; i++){
+				c->get(r, g, b, i, length);
+				strip->setPixelColor(i, PicoLed::RGB(r, g, b));
+			}
+		} else {
+			strip->clear();
 		}
 	}
 }

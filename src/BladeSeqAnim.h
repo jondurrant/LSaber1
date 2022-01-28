@@ -10,7 +10,7 @@
 
 #include "BladeSeqInterface.h"
 
-#define BLADESEQ_ANIM_MS 500
+#define BLADESEQ_ANIM_MS 1000
 
 class BladeSeqAnim : public BladeSeqInterface {
 public:

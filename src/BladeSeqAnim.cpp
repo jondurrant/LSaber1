@@ -44,7 +44,12 @@ void BladeSeqAnim::tick(BladeColour *c, PicoLed::PicoLedController *strip, uint8
 			lastStep = 0;
 			strip->show();
 		} else {
-			uint32_t step =  sinceStart / (BLADESEQ_ANIM_MS / length);
+			float fStep = (float)sinceStart / ((float)BLADESEQ_ANIM_MS / (float)length );
+			//uint32_t step =  sinceStart / (BLADESEQ_ANIM_MS / length);
+			uint32_t step = (int)fStep;
+			if (step > length){
+				step = length;
+			}
 			if (step > lastStep){
 				if (xBladeSeq == BladeSeqTurnOff){
 					bladeOff(step, c, strip, length);

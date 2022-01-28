@@ -561,6 +561,8 @@ char* SaberState::jsonClock(char *buf, unsigned int len){
 	char s[20];
 	datetime_t time;
 	rtc_get_datetime(&time);
+	if (time.year > 3000 || time.year < 2000)
+		return buf;
 	sprintf(s,"%d-%d-%d %d:%d:%d",
 			time.year,  //4
 			time.month, //2

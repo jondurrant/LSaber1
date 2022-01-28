@@ -26,7 +26,13 @@ void BladeSeqAlert::tick(BladeColour *c, PicoLed::PicoLedController *strip, uint
 	if (xBladeSeq == BladeSeqTurnOn){
 		uint32_t sinceStart = nowMS() - xStartTime;
 		uint32_t seqTime = sinceStart % BLADE_ALERT_SEQ_MS;
-		uint32_t step = seqTime / (BLADE_ALERT_SEQ_MS / length);
+		float fStep = (float)seqTime / ((float)BLADE_ALERT_SEQ_MS / (float)length );
+		uint32_t step = (int)fStep;
+		//uint32_t step = seqTime / (BLADE_ALERT_SEQ_MS / length);
+
+		if (step > length){
+			step = length;
+		}
 
 		if (step != lastStep){
 			strip->clear();
@@ -89,6 +95,12 @@ void BladeSeqAlert::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedContr
 }
 
 void BladeSeqAlert::bladeOff(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
+	strip->clear();
+	strip->show();
+	xBladeSeq = BladeSeqOff;
+}
+
+void BladeSeqAlert::off(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length){
 	strip->clear();
 	strip->show();
 	xBladeSeq = BladeSeqOff;

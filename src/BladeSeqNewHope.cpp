@@ -22,7 +22,7 @@ void BladeSeqNewHope::bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedCon
 	uint8_t r,g,b;
 	float bright = 1.0;
 
-	//printf("NewHope %d of %d\n", count, length);
+	printf("NewHope %d of %d\n", count, length);
 
 	uint8_t pixels = length / SPARK_FRACTION;
 	if (pixels < 0){

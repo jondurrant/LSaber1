@@ -20,6 +20,8 @@ public:
 
 	virtual void tick(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
 
+	virtual void off(BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
+
 protected:
 	virtual void bladeOn(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);
 		virtual void bladeOff(uint8_t count, BladeColour *c, PicoLed::PicoLedController *strip, uint8_t length);

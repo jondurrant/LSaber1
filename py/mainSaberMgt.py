@@ -60,7 +60,7 @@ def getSabers():
         asColumn.append(c)
     
     #Make sure we only pull back data on actual saber lights, as other things could be in group
-    where = {'column': "reported.days", 'op': "<", 'value': 24}
+    where = {'column': "reported.temp", 'op': ">", 'value': 0}
     
     d = twinClient.query(select, asColumn, where, orient="records")
     if ("res" in d):

@@ -8,6 +8,8 @@
 
 #include "lwesp/apps/lwesp_mqtt_client_api.h"
 
+#include <WatchdogBlinkAgent.h>
+
 #include "pico/multicore.h"
 
 #include <PicoLed.hpp>
@@ -129,14 +131,14 @@ init_thread(void* pvParameters) {
 	char macs[15];
 	bool ssl= false;
 
-	//MQTTRouterTwin mqttRouter;
+
+	WatchdogBlinkAgent watchdog;
+	watchdog.start(tskIDLE_PRIORITY+1);
+
 	MQTTRouterSaber mqttRouter;
-	//StateExample state;
 	SaberState state;
-	ExampleAgentObserver agentObs;
 
 	MQTTAgent mqttAgent(512, 512);
-	//TwinTask xTwin;
 	BladeStateAgent xTwin;
 	MQTTPingTask xPing;
 
@@ -147,7 +149,6 @@ init_thread(void* pvParameters) {
 
 	//Connect to WiFi
 	if (WifiHelper::connectToAp(SID, PASSWD)){
-//	if (WifiHelper::autoJoinOrConfig()){
 		char ips[16];
 		WifiHelper::getIPAddressStr(ips);
 		printf("WIFI IP %s\n", ips);
@@ -184,7 +185,6 @@ init_thread(void* pvParameters) {
 		mqttRouter.setPingTask(&xPing);
 
 		//Setup and start the mqttAgent
-		//mqttAgent.setObserver(&agentObs);
 		mqttAgent.setObserver(&xLedMgr);
 		mqttAgent.setRouter(&mqttRouter);
 
