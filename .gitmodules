@@ -22,3 +22,6 @@
 [submodule "lib/lwespFork"]
 	path = lib/lwespFork
 	url = https://github.com/jondurrant/lwespFork
+[submodule "lib/TwinThingPyMQTT"]
+	path = lib/TwinThingPyMQTT
+	url = https://github.com/jondurrant/TwinThingPyMQTT

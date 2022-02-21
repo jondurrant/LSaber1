@@ -171,10 +171,9 @@ def startMQTT():
     
     mqttAgent.start()
 
-
-
-if __name__ == "__main__":
-    
+     
+     
+def setupApp():
     LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
     logging.basicConfig(level=LOGLEVEL, 
                     format= '[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s')
@@ -184,7 +183,12 @@ if __name__ == "__main__":
     
     #Run MQTT Aget in a thread    
     thread = threading.Thread(target = startMQTT)
-    thread.start()
+    thread.start()  
+    
+setupApp()
+
+
+if __name__ == "__main__":
     
     app.run(host="0.0.0.0")
     
