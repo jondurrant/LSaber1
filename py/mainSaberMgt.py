@@ -62,11 +62,15 @@ def getSabers():
     #Make sure we only pull back data on actual saber lights, as other things could be in group
     where = {'column': "reported.temp", 'op': ">", 'value': 0}
     
+    
     d = twinClient.query(select, asColumn, where, orient="records")
+    
     if ("res" in d):
+        
         table = recordsToTable(d["res"], "clientId")
     
         return table 
+    
     return {}
     
 #===============================================================================
@@ -112,12 +116,14 @@ def recordsToTable(recs, indexCol):
     table = {"cols": [], "rows": []}
     
     #print("rec=%s\n"%json.dumps(recs))
+    #print("empty=%s\n"%json.dumps(table))
     row = recs[0]
     
     for c in row:
         cell = row[c]
         t=type(cell)
-        nt = typeConv.get(t, str)
+        nt = typeConv.get(t, "string")
+        #print("Col: id:%s orig: %s type:%s label:%s"%(c, t, nt, c))
         table["cols"].append({"id": c, "type": nt, "label": c})
 
     #print("cols=%s\n"%json.dumps(table))
