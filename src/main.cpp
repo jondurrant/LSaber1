@@ -204,6 +204,15 @@ init_thread(void* pvParameters) {
     for (;;){
     	vTaskDelay(5000);
 
+    	if (! WifiHelper::isJoined()){
+    		while (! WifiHelper::connectToAp(SID, PASSWD)){
+    			vTaskDelay(5000);
+    		}
+    		char ips[16];
+			WifiHelper::getIPAddressStr(ips);
+			printf("WIFI IP %s\n", ips);
+    	}
+
     	//runTimeStats();
     }
 }
