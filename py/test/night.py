@@ -2,15 +2,23 @@ import paho.mqtt.client as mqtt
 import json
 import time
 import random
+import sys
+import os
 
 
+if (len(sys.argv) != 2):
+    print("Require target ID as parater")
+    sys.exit()
 
-targetId = "BCFF4D195C03"
-target2Id = "BCFF4D197AE6"
-host = "pudev"
-port = 1883
-user = "mbp"
-passwd = "test"
+
+targetId = sys.argv[1]
+
+user=os.environ.get("MQTT_USER", "nob")
+passwd=os.environ.get("MQTT_PASSWD", "nob")
+host= os.environ.get("MQTT_HOST", "localhost")
+port=int(os.environ.get("MQTT_PORT", "1883"))
+print("MQTT %s:%d - %s\n"%(host,port, user))
+
 
 ping_topic = "TNG/" + targetId + "/TPC/PING"
 connected_topic = "TNG/" + user + "/LC/ON"
@@ -20,7 +28,6 @@ lc_topic = "TNG/" + targetId + "/LC/#"
 state_topics = "TNG/" + targetId + "/STATE/#"
 get_topic = "TNG/" + targetId + "/STATE/GET"
 set_topic = "TNG/" + targetId + "/STATE/SET"
-set2_topic = "TNG/" + target2Id + "/STATE/SET"
 upd_topic = "TNG/" + targetId + "/STATE/UPD"
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -70,16 +77,6 @@ j = {'delta': { 'trn': 6,
 p = json.dumps(j)
 print("Publishing  %s"%p)
 infot = client.publish(set_topic, p,retain=False, qos=1)
-infot.wait_for_publish()
-
-j = {'delta': { 'trn': 6,
-                'day': False,
-                'on': True
-               }
-            }
-p = json.dumps(j)
-print("Publishing  %s"%p)
-infot = client.publish(set2_topic, p,retain=False, qos=1)
 infot.wait_for_publish()
 
 

@@ -1,14 +1,23 @@
 import paho.mqtt.client as mqtt
 import json
 import time
+import sys
+import os
 
 
-targetId = "BCFF4D195C03"
-target2Id = "BCFF4D197AE6"
-host = "pudev"
-port = 1883
-user = "mbp"
-passwd = "test"
+if (len(sys.argv) != 2):
+    print("Require target ID as parater")
+    sys.exit()
+
+
+targetId = sys.argv[1]
+
+user=os.environ.get("MQTT_USER", "nob")
+passwd=os.environ.get("MQTT_PASSWD", "nob")
+host= os.environ.get("MQTT_HOST", "localhost")
+port=int(os.environ.get("MQTT_PORT", "1883"))
+print("MQTT %s:%d - %s\n"%(host,port, user))
+
 
 ping_topic = "TNG/" + targetId + "/TPC/PING"
 connected_topic = "TNG/" + user + "/LC/ON"
@@ -16,9 +25,7 @@ connected_topic = "TNG/" + user + "/LC/ON"
 pong_topic = "TNG/" + targetId + "/TPC/PONG"
 lc_topic = "TNG/" + targetId + "/LC/#"
 state_topics = "TNG/" + targetId + "/STATE/#"
-state2_topics = "TNG/" + target2Id + "/STATE/#"
 get_topic = "TNG/" + targetId + "/STATE/GET"
-get2_topic = "TNG/" + target2Id + "/STATE/GET"
 set_topic = "TNG/" + targetId + "/STATE/SET"
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -49,7 +56,6 @@ client.loop_start()
 client.subscribe( lc_topic )
 client.subscribe( pong_topic )
 client.subscribe( state_topics )
-client.subscribe( state2_topics )
     
 print("publishing connect")
 j = {'online':1}
@@ -61,7 +67,6 @@ j = {'GET': 1}
 p = json.dumps(j)
 print("Publishing ping %s"%p)
 infot = client.publish(get_topic, p,retain=False, qos=1)
-infot = client.publish(get2_topic, p,retain=False, qos=1)
 infot.wait_for_publish()
 
 time.sleep(30)

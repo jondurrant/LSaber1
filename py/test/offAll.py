@@ -1,13 +1,15 @@
 import paho.mqtt.client as mqtt
 import json
 import time
+import sys
+import os
 
 
-targetId = "BCFF4D195C03"
-host = "nas3"
-port = 1883
-user = "mbp"
-passwd = "mbp"
+user=os.environ.get("MQTT_USER", "nob")
+passwd=os.environ.get("MQTT_PASSWD", "nob")
+host= os.environ.get("MQTT_HOST", "localhost")
+port=int(os.environ.get("MQTT_PORT", "1883"))
+print("MQTT %s:%d - %s\n"%(host,port, user))
 
 off_topic = "GRP/saber/TPC/off"
 connected_topic = "TNG/" + user + "/LC/ON"
@@ -42,11 +44,7 @@ client.connect(host, port, 60)
 
 client.loop_start()
 
-'''
-client.subscribe( lc_topic )
-client.subscribe( pong_topic )
-client.subscribe( state_topic )
-'''
+
 client.subscribe( grp_topic )
     
 print("publishing connect")

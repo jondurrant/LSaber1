@@ -2,26 +2,19 @@ import paho.mqtt.client as mqtt
 import json
 import time
 import random
+import sys
+import os
 
 
+user=os.environ.get("MQTT_USER", "nob")
+passwd=os.environ.get("MQTT_PASSWD", "nob")
+host= os.environ.get("MQTT_HOST", "localhost")
+port=int(os.environ.get("MQTT_PORT", "1883"))
+print("MQTT %s:%d - %s\n"%(host,port, user))
 
-targetId = "BCFF4D195C03"
-target2Id = "BCFF4D197AE6"
-host = "pudev"
-port = 1883
-user = "mbp"
-passwd = "test"
 
-ping_topic = "TNG/" + targetId + "/TPC/PING"
 connected_topic = "TNG/" + user + "/LC/ON"
 
-pong_topic = "TNG/" + targetId + "/TPC/PONG"
-lc_topic = "TNG/" + targetId + "/LC/#"
-state_topics = "TNG/" + targetId + "/STATE/#"
-get_topic = "TNG/" + targetId + "/STATE/GET"
-set_topic = "TNG/" + targetId + "/STATE/SET"
-set2_topic = "TNG/" + target2Id + "/STATE/SET"
-upd_topic = "TNG/" + targetId + "/STATE/UPD"
 
 
 alert_topic = "GRP/ALL/ALERT"
@@ -53,23 +46,13 @@ client.connect(host, port, 60)
 
 client.loop_start()
 
-client.subscribe( lc_topic )
-client.subscribe( pong_topic )
-client.subscribe( state_topics )
+
     
 print("publishing connect")
 j = {'online':1}
 p = json.dumps(j)
 client.publish(connected_topic,p,retain=False,qos=1)
 
-
-j = {'delta': {'drgb': [0, 0, 255]}}
-p = json.dumps(j)
-print("Publishing  %s"%p)
-infot = client.publish(set_topic, p,retain=False, qos=1)
-infot.wait_for_publish()
-infot = client.publish(set2_topic, p,retain=False, qos=1)
-infot.wait_for_publish()
 
 
 

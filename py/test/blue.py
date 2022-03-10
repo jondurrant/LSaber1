@@ -2,12 +2,23 @@ import paho.mqtt.client as mqtt
 import json
 import time
 import random
+import sys
+import os
 
-targetId = "jon"
-host = "pudev"
-port = 1883
-user = "mbp"
-passwd = "test"
+
+if (len(sys.argv) != 2):
+    print("Require target ID as parater")
+    sys.exit()
+
+
+targetId = sys.argv[1]
+
+user=os.environ.get("MQTT_USER", "nob")
+passwd=os.environ.get("MQTT_PASSWD", "nob")
+host= os.environ.get("MQTT_HOST", "localhost")
+port=int(os.environ.get("MQTT_PORT", "1883"))
+print("MQTT %s:%d - %s\n"%(host,port, user))
+
 
 ping_topic = "TNG/" + targetId + "/TPC/PING"
 connected_topic = "TNG/" + user + "/LC/ON"
